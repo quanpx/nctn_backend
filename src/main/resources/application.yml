@@ -1,0 +1,35 @@
+server:
+  port: 8000
+
+spring:
+  security:
+    oauth2:
+      client:
+        provider:
+          keycloak:
+            issuer-uri: http://localhost:8080/realms/nctn
+            token-uri: http://localhost:8080/realms/vd/protocol/openid-connect/token
+#        registration:
+#          client-id: nctn-app
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/nctn_db
+    driver-class-name: org.postgresql.Driver
+    username: nctn
+    password: crquan07
+
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update
+    defer-datasource-initialization: true
+
+keycloak:
+  auth-server-url: http://localhost:8080/auth
+  realm: nctn
+  resource: nctn-app
+  public-client: true
+  principal-attribute: preferred_username
+
+
+
