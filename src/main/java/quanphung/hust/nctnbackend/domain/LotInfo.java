@@ -26,7 +26,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Entity
 @Table(name = "lot_info")
-public class LotInfo
+public class LotInfo extends InitializationInfo
 {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -54,11 +54,17 @@ public class LotInfo
   @Column(name="step")
   private Long step;
 
+  @Column(name="bid_num")
+  private int bidNum;
+
   @Column(name="order_in_session")
   private Integer orderInSession;
-
   @ManyToOne
   @JoinColumn(name = "session_id")
   private AuctionSession session;
 
+  public void increaseBidNum()
+  {
+    this.bidNum++;
+  }
 }

@@ -9,6 +9,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -47,6 +48,18 @@ public class AuctionSession extends InitializationInfo
   @Column(name = "is_stream")
   private boolean isStream;
 
+  @Column(name = "status")
+  private String status;
+
+  @Column(name = "registerNum")
+  private int registerNum;
+
   @OneToMany(fetch = FetchType.LAZY,mappedBy = "session")
   private List<LotInfo> itemsInSession;
+
+  public void increaseRegisterNumber()
+  {
+    this.registerNum++;
+  }
+
 }

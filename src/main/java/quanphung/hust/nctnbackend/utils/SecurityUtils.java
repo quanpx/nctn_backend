@@ -10,6 +10,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
 
+import quanphung.hust.nctnbackend.security.CustomUserDetails;
 import quanphung.hust.nctnbackend.type.UserRole;
 
 public final class SecurityUtils
@@ -39,9 +40,10 @@ public final class SecurityUtils
     {
       return Optional.of(principal.toString());
     }
-    else if (principal instanceof Jwt)
+    else if (principal instanceof CustomUserDetails)
     {
-      return resolveUsernameFromJwt((Jwt)principal);
+      CustomUserDetails userDetails = (CustomUserDetails)principal;
+      return Optional.of(userDetails.getUsername());
     }
     else
     {

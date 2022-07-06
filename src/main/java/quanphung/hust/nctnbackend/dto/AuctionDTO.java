@@ -1,6 +1,7 @@
 package quanphung.hust.nctnbackend.dto;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
+import java.sql.Timestamp;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,14 +10,12 @@ import lombok.NoArgsConstructor;
 
 @Data
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class ItemDto
+@AllArgsConstructor
+public class AuctionDTO
 {
-
   @JsonProperty("id")
-  private String id;
+  private String Id;
 
   @JsonProperty("name")
   private String name;
@@ -24,12 +23,12 @@ public class ItemDto
   @JsonProperty("description")
   private String description;
 
-  @JsonProperty("current_price")
-  private Long currentPrice;
+  @JsonProperty("num_item")
+  private Integer numItem;
 
-  @JsonProperty("estm_price")
-  private Long estmPrice;
+  @JsonProperty("start_time")
+  private Timestamp startTime;
 
-  @JsonProperty("order_in_lot")
-  private Integer orderLot;
+  @JsonProperty("register_num")
+  private Integer registerNum;
 }

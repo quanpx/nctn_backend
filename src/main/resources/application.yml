@@ -1,6 +1,11 @@
 server:
   port: 8000
 
+jwt:
+  secretKey: quanify
+  expirationDateInMs: 3000
+  refreshExpirationDateInMs: 9000000
+
 spring:
   security:
     oauth2:
@@ -24,12 +29,8 @@ spring:
       ddl-auto: update
     defer-datasource-initialization: true
 
-keycloak:
-  auth-server-url: http://localhost:8080/auth
-  realm: nctn
-  resource: nctn-app
-  public-client: true
-  principal-attribute: preferred_username
+  main:
+    allow-circular-references: true
 
 
 
