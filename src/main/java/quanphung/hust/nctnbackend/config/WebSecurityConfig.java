@@ -62,6 +62,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter
       .antMatchers(HttpMethod.GET,"/api/auction/").permitAll()
       .anyRequest().authenticated()
       .and()
+      .logout()
+      .logoutUrl("/api/logout")
+      .logoutSuccessUrl("/")
+      .and()
       .exceptionHandling().authenticationEntryPoint(jwtTokenEntryPoint).and();
 
     http.addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class);
