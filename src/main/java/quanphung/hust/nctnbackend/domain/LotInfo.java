@@ -42,6 +42,9 @@ public class LotInfo extends InitializationInfo
   @Column(name="current_price")
   private Long currentPrice;
 
+  @Column(name="init_price")
+  private Long initPrice;
+
   @Column(name = "estm_price")
   private Long estmPrice;
 
@@ -56,6 +59,9 @@ public class LotInfo extends InitializationInfo
 
   @Column(name="bid_num")
   private int bidNum;
+
+  @Column(name="follower")
+  private int follower;
 
   @Column(name="order_in_session")
   private Integer orderInSession;

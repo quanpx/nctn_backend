@@ -28,11 +28,11 @@ public final class OrderUtils
       return new OrderSpecifier[0];
     }
 
-    var entityPathBuilder = new PathBuilder<>(Entity.class, entityName);
+    PathBuilder<Entity> entityPathBuilder = new PathBuilder<>(Entity.class, entityName);
 
-    var orderSpecifiers = new ArrayList<OrderSpecifier<String>>();
+    ArrayList<OrderSpecifier<String>> orderSpecifiers = new ArrayList<OrderSpecifier<String>>();
 
-    for (var orderByColumn : orderByColumns)
+    for (String orderByColumn : orderByColumns)
     {
       String[] columnOrderPair = orderByColumn.split(":");
 
