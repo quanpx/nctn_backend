@@ -11,6 +11,7 @@ import quanphung.hust.nctnbackend.dto.request.BidRequest;
 import quanphung.hust.nctnbackend.dto.request.CreateAuctionRequest;
 import quanphung.hust.nctnbackend.dto.request.GetAuctionRequest;
 import quanphung.hust.nctnbackend.dto.request.UpdateItemRequest;
+import quanphung.hust.nctnbackend.dto.response.AuctionDetailResponse;
 import quanphung.hust.nctnbackend.dto.response.AuctionStatusResponse;
 import quanphung.hust.nctnbackend.dto.response.BidResponse;
 import quanphung.hust.nctnbackend.dto.response.GetAuctionResponse;
@@ -90,6 +91,12 @@ public class AuctionController implements AuctionOperations
   public void searchItem()
   {
 
+  }
+
+  @Override
+  public ResponseEntity<AuctionDetailResponse> getAuctionDetail(Long id)
+  {
+    return ResponseEntity.ok(auctionService.getAuctionDetail(id));
   }
 
 }

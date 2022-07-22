@@ -1,6 +1,7 @@
 package quanphung.hust.nctnbackend.service;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -18,15 +19,19 @@ import quanphung.hust.nctnbackend.domain.BidInfo;
 import quanphung.hust.nctnbackend.domain.LotInfo;
 import quanphung.hust.nctnbackend.domain.UserAuction;
 import quanphung.hust.nctnbackend.dto.AuctionDTO;
+import quanphung.hust.nctnbackend.dto.LotInfoDto;
 import quanphung.hust.nctnbackend.dto.filter.AuctionFilter;
 import quanphung.hust.nctnbackend.dto.request.BidRequest;
 import quanphung.hust.nctnbackend.dto.request.CreateAuctionRequest;
 import quanphung.hust.nctnbackend.dto.request.GetAuctionRequest;
+import quanphung.hust.nctnbackend.dto.response.AuctionDetailResponse;
+import quanphung.hust.nctnbackend.dto.response.AuctionStatusResponse;
 import quanphung.hust.nctnbackend.dto.response.BidResponse;
 import quanphung.hust.nctnbackend.dto.response.GetAuctionResponse;
 import quanphung.hust.nctnbackend.exception.InvalidSortColumnException;
 import quanphung.hust.nctnbackend.exception.InvalidSortOrderException;
 import quanphung.hust.nctnbackend.mapping.AuctionMapping;
+import quanphung.hust.nctnbackend.mapping.LotMapping;
 import quanphung.hust.nctnbackend.repository.AuctionSessionRepository;
 import quanphung.hust.nctnbackend.repository.BidInfoRepository;
 import quanphung.hust.nctnbackend.repository.LotInfoRepository;
@@ -42,6 +47,9 @@ public class AuctionServiceImpl implements AuctionService
   private static final String SYSTEM_NAME = "nctn_system";
   @Autowired
   private AuctionMapping mapping;
+
+  @Autowired
+  private LotMapping lotMapping;
 
   @Autowired
   private LotInfoRepository lotInfoRepository;
@@ -175,6 +183,26 @@ public class AuctionServiceImpl implements AuctionService
       response.setError("Lot item not found!");
     }
 
+    return response;
+  }
+
+  @Override
+  public AuctionDetailResponse getAuctionDetail(Long id)
+  {
+    Optional<AuctionSession> auctionOpt = auctionSessionRepository.findById(id);
+    if (auctionOpt.isEmpty())
+    {
+      log.warn("Not found auction");
+      throw new BadRequestException("Not found auction");
+    }
+    AuctionSession auction = auctionOpt.get();
+    AuctionDetailResponse response = new AuctionDetailResponse();
+    AuctionDTO auctionDTO = mapping.convertToDto(auction);
+    List<LotInfo> lotInfos = auction.getItemsInSession();
+    List<LotInfoDto> lotInfoDtoList = lotInfos.stream().map(lotInfo -> lotMapping.convertToDto(lotInfo)).collect(
+      Collectors.toList());
+    response.setAuctionDTO(auctionDTO);
+    response.setLotInfos(lotInfoDtoList);
     return response;
   }
 

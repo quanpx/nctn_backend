@@ -1,5 +1,6 @@
 package quanphung.hust.nctnbackend.config.jwt;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
@@ -7,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
@@ -21,6 +23,8 @@ import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.UnsupportedJwtException;
 import lombok.extern.slf4j.Slf4j;
+import quanphung.hust.nctnbackend.domain.Role;
+import quanphung.hust.nctnbackend.security.CustomUserDetails;
 
 @Component
 @Slf4j
@@ -35,17 +39,17 @@ public class JwtTokenProvider
   @Value("${jwt.refreshExpirationDateInMs}")
   private Long refreshExpirationDateInMs;
 
-  public String generateToken(UserDetails userDetails)
+  public String generateToken(CustomUserDetails userDetails)
   {
     Map<String, Object> claims = new HashMap<>();
 
-    Collection<? extends GrantedAuthority> roles = userDetails.getAuthorities();
+    List<Role> roles = new ArrayList<Role>((Collection<? extends Role>)userDetails.getAuthorities());
 
-    if (roles.contains(new SimpleGrantedAuthority("ROLE_ADMIN")))
+    if (roles.contains(new Role("admin")))
     {
       claims.put("isAdmin", true);
     }
-    if (roles.contains(new SimpleGrantedAuthority("ROLE_USER")))
+    if (roles.contains(new Role("user")))
     {
       claims.put("isUser", true);
     }

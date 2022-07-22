@@ -30,6 +30,9 @@ public class CreateLotInfoRequest
   @JsonProperty("step")
   private Long step;
 
+  @JsonProperty("image_url")
+  private String imageUrl;
+
 
 
 

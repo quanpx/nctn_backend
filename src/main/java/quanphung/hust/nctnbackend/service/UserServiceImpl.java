@@ -1,6 +1,9 @@
 package quanphung.hust.nctnbackend.service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
@@ -9,22 +12,25 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.engine.jdbc.spi.SqlExceptionHelper;
 import quanphung.hust.nctnbackend.config.jwt.JwtTokenProvider;
+import quanphung.hust.nctnbackend.domain.Role;
 import quanphung.hust.nctnbackend.domain.UserInfo;
 import quanphung.hust.nctnbackend.dto.request.LoginRequest;
 import quanphung.hust.nctnbackend.dto.request.SignUpRequest;
 import quanphung.hust.nctnbackend.dto.response.AuthResponse;
+import quanphung.hust.nctnbackend.dto.response.RoleResponse;
 import quanphung.hust.nctnbackend.repository.UserInfoRepository;
 import quanphung.hust.nctnbackend.security.CustomUserDetails;
+import quanphung.hust.nctnbackend.type.UserRole;
+import quanphung.hust.nctnbackend.utils.SecurityUtils;
 
 @Service
 @Slf4j
@@ -56,10 +62,13 @@ public class UserServiceImpl implements UserService
     SecurityContextHolder.getContext().setAuthentication(authentication);
     CustomUserDetails userDetails = (CustomUserDetails)authentication.getPrincipal();
 
+
     String token = jwtTokenProvider.generateToken(userDetails);
     response = AuthResponse.builder()
       .accessToken(token)
       .expiresIn(expiresToken)
+      .name(userDetails.getUsername())
+      .roles(userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
       .build();
     return response;
   }
@@ -72,6 +81,8 @@ public class UserServiceImpl implements UserService
     AuthResponse response = null;
     String username = request.getUsername();
     boolean checkUserExist = checkUserExisted(username);
+    List<Role> roles = new ArrayList<>();
+    roles.add(Role.builder().name(UserRole.USER.getValue()).build());
     UserInfo userInfo = UserInfo
       .builder()
       .email(request.getEmail())
@@ -80,6 +91,7 @@ public class UserServiceImpl implements UserService
       .password(passwordEncoder.encode(request.getPassword()))
       .lastName(request.getLastName())
       .phone(request.getPhone())
+      .roles(roles)
       .build();
 
     if (!checkUserExist)
@@ -93,6 +105,19 @@ public class UserServiceImpl implements UserService
 
     return response;
 
+  }
+
+  @Override
+  public RoleResponse getRoles()
+  {
+    List<String> roles = SecurityUtils.getAuthorities()
+      .stream()
+      .map(Role::getAuthority)
+      .collect(Collectors.toList());
+
+    return RoleResponse.builder()
+      .roles(roles)
+      .build();
   }
 
   private boolean checkUserExisted(String username)

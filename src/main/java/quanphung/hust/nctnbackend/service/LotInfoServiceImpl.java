@@ -49,6 +49,7 @@ public class LotInfoServiceImpl implements LotInfoService
       .step(request.getStep())
       .estmPrice(request.getEstmPrice())
       .currentPrice(request.getCurrentPrice())
+      .imageUrl(request.getImageUrl())
       .build();
   }
 
@@ -76,6 +77,7 @@ public class LotInfoServiceImpl implements LotInfoService
       .orderLot(lot.getOrderInSession())
       .session(lot.getSession().getName())
       .startTime(lot.getSession().getStartTime())
+      .imageUrl(lot.getImageUrl())
       .build();
   }
 

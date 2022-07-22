@@ -30,6 +30,9 @@ public class LotMapping implements BaseMapping<LotInfo, LotInfoDto>
       .startTime(startTime)
       .currentPrice(lotInfo.getCurrentPrice())
       .session(session)
+      .isSold(lotInfo.isSold())
+      .soldPrice(lotInfo.getSoldPrice())
+      .imageUrl(lotInfo.getImageUrl())
       .build();
   }
 

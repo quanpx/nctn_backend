@@ -10,6 +10,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
 
+import quanphung.hust.nctnbackend.domain.Role;
 import quanphung.hust.nctnbackend.security.CustomUserDetails;
 import quanphung.hust.nctnbackend.type.UserRole;
 
@@ -55,7 +56,7 @@ public final class SecurityUtils
    * @return
    */
   @SuppressWarnings("unchecked")
-  public static Collection<SimpleGrantedAuthority> getAuthorities()
+  public static Collection<Role> getAuthorities()
   {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -64,14 +65,14 @@ public final class SecurityUtils
       return Collections.emptyList();
     }
 
-    return (Collection<SimpleGrantedAuthority>)authentication.getAuthorities();
+    return (Collection<Role>)authentication.getAuthorities();
   }
 
   public static boolean isVdAdmin()
   {
     // Allow VD Admin can abort the session
-    Collection<SimpleGrantedAuthority> authorities = getAuthorities();
-    for (SimpleGrantedAuthority authority : authorities)
+    Collection<Role> authorities = getAuthorities();
+    for (Role authority : authorities)
     {
       if (UserRole.SYSTEM_ADMIN.getValue().equals(authority.getAuthority()))
       {

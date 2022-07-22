@@ -38,6 +38,15 @@ public class LotInfoDto
   @JsonProperty("session")
   private String session;
 
+  @JsonProperty("is_sold")
+  private boolean isSold;
+
+  @JsonProperty("sold_price")
+  private Long soldPrice;
+
   @JsonProperty("start_time")
   private Timestamp startTime;
+
+  @JsonProperty("image_url")
+  private String imageUrl;
 }

@@ -6,6 +6,7 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -19,6 +20,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import net.minidev.json.annotate.JsonIgnore;
 
 @Entity
 @Data
@@ -52,5 +54,13 @@ public class UserInfo implements Serializable
 
   @Column(name="email")
   private String email;
+
+  @ManyToMany(fetch = FetchType.EAGER,cascade = CascadeType.ALL)
+  @JoinTable(name = "user_role",
+    joinColumns = @JoinColumn(name = "user_id"),
+    inverseJoinColumns = @JoinColumn(name = "role_id")
+  )
+  @JsonIgnore
+  private List<Role> roles;
 
 }

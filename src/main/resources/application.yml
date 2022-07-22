@@ -3,7 +3,7 @@ server:
 
 jwt:
   secretKey: quanify
-  expirationDateInMs: 3000
+  expirationDateInMs: 3000000
   refreshExpirationDateInMs: 9000000
 
 spring:

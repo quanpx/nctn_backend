@@ -65,6 +65,9 @@ public class LotInfo extends InitializationInfo
 
   @Column(name="order_in_session")
   private Integer orderInSession;
+
+  @Column(name = "image_url")
+  private String imageUrl;
   @ManyToOne
   @JoinColumn(name = "session_id")
   private AuctionSession session;

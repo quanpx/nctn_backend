@@ -14,6 +14,7 @@ import quanphung.hust.nctnbackend.dto.request.BidRequest;
 import quanphung.hust.nctnbackend.dto.request.CreateAuctionRequest;
 import quanphung.hust.nctnbackend.dto.request.CreateLotInfoRequest;
 import quanphung.hust.nctnbackend.dto.request.UpdateItemRequest;
+import quanphung.hust.nctnbackend.dto.response.AuctionDetailResponse;
 import quanphung.hust.nctnbackend.dto.response.AuctionStatusResponse;
 import quanphung.hust.nctnbackend.dto.response.BidResponse;
 import quanphung.hust.nctnbackend.dto.response.GetAuctionResponse;
@@ -24,6 +25,8 @@ public interface AuctionOperations
   String API_RESOURCE = "/api";
   String AUCTION_RESOURCE = "/auction";
   String REGISTER = "/register/{id}";
+
+  String AUCTION_DETAIL = "/auction/{id}";
 
   @PostMapping(AUCTION_RESOURCE)
   void createAuction(@RequestBody CreateAuctionRequest request);
@@ -52,4 +55,7 @@ public interface AuctionOperations
   void deleteItem();
 
   void searchItem();
+
+  @GetMapping(AUCTION_DETAIL)
+  ResponseEntity<AuctionDetailResponse> getAuctionDetail(@PathVariable(name = "id") Long id);
 }

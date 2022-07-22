@@ -1,5 +1,7 @@
 package quanphung.hust.nctnbackend.dto.response;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -31,5 +33,11 @@ public class AuthResponse
 
   @JsonProperty("error")
   private String error;
+
+  @JsonProperty("name")
+  private String name;
+
+  @JsonProperty("role")
+  private List<String> roles;
 
 }

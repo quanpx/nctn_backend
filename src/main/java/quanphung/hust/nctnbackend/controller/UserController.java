@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 import quanphung.hust.nctnbackend.dto.request.LoginRequest;
 import quanphung.hust.nctnbackend.dto.request.SignUpRequest;
 import quanphung.hust.nctnbackend.dto.response.AuthResponse;
+import quanphung.hust.nctnbackend.dto.response.RoleResponse;
 import quanphung.hust.nctnbackend.service.UserService;
 
 @RestController
@@ -27,5 +28,11 @@ public class UserController implements UserOperations
   public ResponseEntity<AuthResponse> signup(SignUpRequest request)
   {
     return ResponseEntity.ok(userService.signup(request));
+  }
+
+  @Override
+  public ResponseEntity<RoleResponse> getRoles()
+  {
+    return ResponseEntity.ok(userService.getRoles());
   }
 }

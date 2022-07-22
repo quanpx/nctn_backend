@@ -9,18 +9,22 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import quanphung.hust.nctnbackend.domain.UserInfo;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 public class CustomUserDetails implements UserDetails
 {
+  private static final long serialVersionUID = 8927583625600001881L;
   UserInfo userInfo;
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities()
   {
-    return Collections.singleton(new SimpleGrantedAuthority("ROLE_USER"));
+    return userInfo.getRoles();
   }
 
   @Override
