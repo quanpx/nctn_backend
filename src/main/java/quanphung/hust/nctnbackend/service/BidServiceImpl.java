@@ -98,12 +98,14 @@ public class BidServiceImpl implements BidService{
     private BidInfo findBidedInfo(Long lotId)
     {
         Optional<String> usernameOpt = SecurityUtils.getCurrentUsername();
-        if (usernameOpt.isEmpty())
+        if (usernameOpt.isPresent())
         {
-            return null;
+            String username = usernameOpt.get();
+            return bidInfoRepository.findBidInfoByUsernameAndLot(username, lotId);
+
         }
-        String username = usernameOpt.get();
-        return bidInfoRepository.findBidInfoByUsernameAndLot(username, lotId);
+        return null;
+
 
     }
 }

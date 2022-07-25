@@ -58,22 +58,25 @@ public class LotInfoServiceImpl implements LotInfoService {
     @Override
     public LotInfoDto getLotDetail(Long id) {
         Optional<LotInfo> lotOpt = lotInfoRepository.findById(id);
-        if (lotOpt.isEmpty()) {
+        if (lotOpt.isPresent()) {
+            LotInfo lot = lotOpt.get();
+            return LotInfoDto.builder()
+                    .id(lot.getId().toString())
+                    .name(lot.getName())
+                    .currentPrice(lot.getCurrentPrice())
+                    .description(lot.getDescription())
+                    .estmPrice(lot.getEstmPrice())
+                    .orderLot(lot.getOrderInSession())
+                    .session(lot.getSession().getId().toString())
+                    .startTime(lot.getSession().getStartTime())
+                    .imageUrl(lot.getImageUrl())
+                    .build();
+        }else
+        {
             log.error("Id not available!");
             throw new BadRequestException(("Id not available!"));
         }
-        LotInfo lot = lotOpt.get();
-        return LotInfoDto.builder()
-                .id(lot.getId().toString())
-                .name(lot.getName())
-                .currentPrice(lot.getCurrentPrice())
-                .description(lot.getDescription())
-                .estmPrice(lot.getEstmPrice())
-                .orderLot(lot.getOrderInSession())
-                .session(lot.getSession().getId().toString())
-                .startTime(lot.getSession().getStartTime())
-                .imageUrl(lot.getImageUrl())
-                .build();
+
     }
 
     @Override

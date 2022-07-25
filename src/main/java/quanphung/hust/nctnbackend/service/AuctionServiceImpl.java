@@ -1,19 +1,9 @@
 package quanphung.hust.nctnbackend.service;
 
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import javax.transaction.Transactional;
-import javax.ws.rs.BadRequestException;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.querydsl.core.types.OrderSpecifier;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import quanphung.hust.nctnbackend.domain.AuctionSession;
 import quanphung.hust.nctnbackend.domain.BidInfo;
 import quanphung.hust.nctnbackend.domain.LotInfo;
@@ -21,12 +11,9 @@ import quanphung.hust.nctnbackend.domain.UserAuction;
 import quanphung.hust.nctnbackend.dto.AuctionDTO;
 import quanphung.hust.nctnbackend.dto.LotInfoDto;
 import quanphung.hust.nctnbackend.dto.filter.AuctionFilter;
-import quanphung.hust.nctnbackend.dto.request.BidRequest;
 import quanphung.hust.nctnbackend.dto.request.CreateAuctionRequest;
 import quanphung.hust.nctnbackend.dto.request.GetAuctionRequest;
 import quanphung.hust.nctnbackend.dto.response.AuctionDetailResponse;
-import quanphung.hust.nctnbackend.dto.response.AuctionStatusResponse;
-import quanphung.hust.nctnbackend.dto.response.BidResponse;
 import quanphung.hust.nctnbackend.dto.response.GetAuctionResponse;
 import quanphung.hust.nctnbackend.exception.InvalidSortColumnException;
 import quanphung.hust.nctnbackend.exception.InvalidSortOrderException;
@@ -39,6 +26,13 @@ import quanphung.hust.nctnbackend.repository.UserAuctionRepository;
 import quanphung.hust.nctnbackend.repository.orderutils.AuctionOrderUtils;
 import quanphung.hust.nctnbackend.type.SessionStatus;
 import quanphung.hust.nctnbackend.utils.SecurityUtils;
+
+import javax.transaction.Transactional;
+import javax.ws.rs.BadRequestException;
+import java.sql.Timestamp;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -120,62 +114,63 @@ public class AuctionServiceImpl implements AuctionService {
     @Transactional
     public void registerAuction(Long auctionSession) {
         Optional<AuctionSession> auctionOpt = auctionSessionRepository.findById(auctionSession);
-        if (auctionOpt.isEmpty()) {
+        if (auctionOpt.isPresent()) {
+            AuctionSession session = auctionOpt.get();
+            if (!verifyExistedRegisterInDb(session)) {
+
+
+                UserAuction userAuction = UserAuction
+                        .builder()
+                        .auctionSession(session)
+                        .build();
+
+                userAuctionRepository.save(userAuction);
+
+                //update number of register
+                session.increaseRegisterNumber();
+                auctionSessionRepository.save(session);
+            }
+        } else {
             log.error("Not found auction!");
             throw new BadRequestException("Not found auction!");
-        }
-        AuctionSession session = auctionOpt.get();
-        if(!verifyExistedRegisterInDb(session))
-        {
-
-
-            UserAuction userAuction = UserAuction
-                    .builder()
-                    .auctionSession(session)
-                    .build();
-
-            userAuctionRepository.save(userAuction);
-
-            //update number of register
-            session.increaseRegisterNumber();
-            auctionSessionRepository.save(session);
         }
 
     }
 
     private boolean verifyExistedRegisterInDb(AuctionSession auctionSession) {
         String username = SecurityUtils.getCurrentUsername().orElse(null);
-        UserAuction userAuction = userAuctionRepository.findUserAuctionByCreatedByAndAuctionSession(username,auctionSession);
-        return userAuction!=null;
+        UserAuction userAuction = userAuctionRepository.findUserAuctionByCreatedByAndAuctionSession(username, auctionSession);
+        return userAuction != null;
     }
 
     @Override
     public AuctionDetailResponse getAuctionDetail(Long id) {
         Optional<AuctionSession> auctionOpt = auctionSessionRepository.findById(id);
-        if (auctionOpt.isEmpty()) {
+        if (auctionOpt.isPresent()) {
+            AuctionSession auction = auctionOpt.get();
+            AuctionDetailResponse response = new AuctionDetailResponse();
+            AuctionDTO auctionDTO = mapping.convertToDto(auction);
+            List<LotInfo> lotInfos = auction.getItemsInSession();
+            List<LotInfoDto> lotInfoDtoList = lotInfos.stream()
+                    .map(lotInfo -> lotMapping.convertToDto(lotInfo))
+                    .collect(Collectors.toList());
+            response.setAuctionDTO(auctionDTO);
+            response.setLotInfos(lotInfoDtoList);
+            return response;
+        } else {
             log.warn("Not found auction");
             throw new BadRequestException("Not found auction");
         }
-        AuctionSession auction = auctionOpt.get();
-        AuctionDetailResponse response = new AuctionDetailResponse();
-        AuctionDTO auctionDTO = mapping.convertToDto(auction);
-        List<LotInfo> lotInfos = auction.getItemsInSession();
-        List<LotInfoDto> lotInfoDtoList = lotInfos.stream()
-                .map(lotInfo -> lotMapping.convertToDto(lotInfo))
-                .collect(Collectors.toList());
-        response.setAuctionDTO(auctionDTO);
-        response.setLotInfos(lotInfoDtoList);
-        return response;
+
     }
 
     private BidInfo findBidedInfo(Long lotId) {
         Optional<String> usernameOpt = SecurityUtils.getCurrentUsername();
-        if (usernameOpt.isEmpty()) {
-            return null;
+        if (usernameOpt.isPresent()) {
+            String username = usernameOpt.get();
+            return bidInfoRepository.findBidInfoByUsernameAndLot(username, lotId);
         }
-        String username = usernameOpt.get();
-        return bidInfoRepository.findBidInfoByUsernameAndLot(username, lotId);
-
+        return null;
     }
 
     private void updateItemInSession(AuctionSession session, List<LotInfo> items) {
