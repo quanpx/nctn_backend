@@ -31,4 +31,7 @@ public interface UserOperations
   @GetMapping(ROLES)
   ResponseEntity<RoleResponse> getRoles();
 
+  @PostMapping(ROLES)
+  void createRole();
+
 }
