@@ -15,7 +15,5 @@ public interface AuctionService
 
   void registerAuction(Long auctionSession);
 
-  BidResponse bidLot(BidRequest request);
-
   AuctionDetailResponse getAuctionDetail(Long id);
 }

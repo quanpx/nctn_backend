@@ -31,4 +31,7 @@ public class AuctionDTO
 
   @JsonProperty("register_num")
   private Integer registerNum;
+
+  @JsonProperty("image_url")
+  private String imageUrl;
 }

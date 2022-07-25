@@ -76,12 +76,6 @@ public class AuctionController implements AuctionOperations
   }
 
   @Override
-  public ResponseEntity<BidResponse> bidLot(BidRequest request)
-  {
-    return ResponseEntity.ok(auctionService.bidLot(request));
-  }
-
-  @Override
   public void deleteItem()
   {
 

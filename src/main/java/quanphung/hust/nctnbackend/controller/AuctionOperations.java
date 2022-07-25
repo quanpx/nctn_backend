@@ -50,8 +50,6 @@ public interface AuctionOperations
   @GetMapping(AUCTION_RESOURCE+"/status")
   ResponseEntity<AuctionStatusResponse> getAuctionStatus();
 
-  @PostMapping(AUCTION_RESOURCE+"/bid")
-  ResponseEntity<BidResponse> bidLot(@RequestBody BidRequest request);
   void deleteItem();
 
   void searchItem();

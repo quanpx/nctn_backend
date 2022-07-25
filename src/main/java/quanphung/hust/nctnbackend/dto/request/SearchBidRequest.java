@@ -1,7 +1,6 @@
 package quanphung.hust.nctnbackend.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,14 +11,16 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class BidRequest
-{
-  @JsonProperty("lot_id")
-  private Long lotId;
+public class SearchBidRequest {
 
-  @JsonProperty("auction_id")
-  private Long auctionId;
+    private String username;
 
-  @JsonProperty("bid_price")
-  private Long bidPrice;
+    private String status;
+
+    private Integer page;
+
+    private Integer size;
+
+    private String[] orderByColumns;
+
 }

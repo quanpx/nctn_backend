@@ -54,6 +54,9 @@ public class AuctionSession extends InitializationInfo
   @Column(name = "registerNum")
   private int registerNum;
 
+  @Column(name="image_url")
+  private String imageUrl;
+
   @OneToMany(fetch = FetchType.LAZY,mappedBy = "session")
   private List<LotInfo> itemsInSession;
 

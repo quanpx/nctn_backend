@@ -35,6 +35,9 @@ public class CreateAuctionRequest
   @JsonProperty("is_stream")
   private boolean isStream;
 
+  @JsonProperty("image_url")
+  private String imageUrl;
+
 
 
 
