@@ -10,12 +10,14 @@ import quanphung.hust.nctnbackend.dto.filter.BidFilter;
 import quanphung.hust.nctnbackend.dto.request.BidRequest;
 import quanphung.hust.nctnbackend.dto.request.SearchBidRequest;
 import quanphung.hust.nctnbackend.dto.response.BidResponse;
+import quanphung.hust.nctnbackend.dto.sse.BidMessage;
 import quanphung.hust.nctnbackend.mapping.BidMapping;
 import quanphung.hust.nctnbackend.repository.BidInfoRepository;
 import quanphung.hust.nctnbackend.repository.LotInfoRepository;
 import quanphung.hust.nctnbackend.type.BidStatus;
 import quanphung.hust.nctnbackend.utils.SecurityUtils;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -28,6 +30,12 @@ public class BidServiceImpl implements BidService{
     private BidMapping bidMapping;
 
     @Autowired
+    private SseService sseService;
+
+    @Autowired
+    private MessageService messageService;
+
+    @Autowired
     private AuctionService auctionService;
 
     @Autowired
@@ -37,6 +45,7 @@ public class BidServiceImpl implements BidService{
     private BidInfoRepository bidInfoRepository;
 
     @Override
+    @Transactional
     public BidResponse bidLot(BidRequest request) {
         BidResponse response = new BidResponse();
 
@@ -49,7 +58,6 @@ public class BidServiceImpl implements BidService{
             bidInfo = findBidedInfo(request.getLotId());
 
             if (bidInfo != null) {
-                log.info(bidInfo.getCreatedDate().toString());
                 bidInfo = BidInfo.builder()
                         .bidPrice(request.getBidPrice())
                         .lotInfo(lotInfo)
@@ -63,9 +71,23 @@ public class BidServiceImpl implements BidService{
                         .lotInfo(lotInfo)
                         .status(BidStatus.BIDDING.getValue())
                         .build();
-                bidInfoRepository.save(bidInfo);
+               bidInfo = bidInfoRepository.save(bidInfo);
+
+               lotInfo.increaseBidNum();
+               lotInfo= lotInfoRepository.save(lotInfo);
             }
             auctionService.registerAuction(request.getAuctionId());
+
+            Object[] params=new Object[]{request.getBidPrice()};
+            String message = messageService.resolveMessage("bid",params,null);
+            BidMessage bidMessage = BidMessage.builder()
+                    .message(message)
+                    .currentPrice(bidInfo.getBidPrice().toString())
+                    .build();
+
+            log.info(message);
+            sseService.dispatchEvent(bidMessage);
+
 
         } else {
             response.setError("Lot item not found!");

@@ -47,6 +47,9 @@ public class LotInfoDto
   @JsonProperty("start_time")
   private Timestamp startTime;
 
+  @JsonProperty("bid_num")
+  private Integer bidNum;
+
   @JsonProperty("image_url")
   private String imageUrl;
 }

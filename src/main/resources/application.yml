@@ -32,5 +32,9 @@ spring:
   main:
     allow-circular-references: true
 
+  mvc:
+    async:
+      request-timeout: -1
+
 
 
