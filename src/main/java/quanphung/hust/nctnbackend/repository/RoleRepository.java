@@ -8,4 +8,5 @@ import quanphung.hust.nctnbackend.domain.Role;
 @Repository
 public interface RoleRepository extends JpaRepository<Role, Long>
 {
+    Role findRoleByName(String name);
 }

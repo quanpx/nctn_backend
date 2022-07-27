@@ -19,6 +19,7 @@ import quanphung.hust.nctnbackend.dto.request.LoginRequest;
 import quanphung.hust.nctnbackend.dto.request.SignUpRequest;
 import quanphung.hust.nctnbackend.dto.response.AuthResponse;
 import quanphung.hust.nctnbackend.dto.response.RoleResponse;
+import quanphung.hust.nctnbackend.repository.RoleRepository;
 import quanphung.hust.nctnbackend.repository.UserInfoRepository;
 import quanphung.hust.nctnbackend.security.CustomUserDetails;
 import quanphung.hust.nctnbackend.type.UserRole;
@@ -49,6 +50,9 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private RoleRepository roleRepository;
+
     @Override
     public AuthResponse login(LoginRequest request) {
         AuthResponse response;
@@ -76,7 +80,8 @@ public class UserServiceImpl implements UserService {
         String username = request.getUsername();
         boolean checkUserExist = checkUserExisted(username);
         List<Role> roles = new ArrayList<>();
-        roles.add(Role.builder().name(UserRole.USER.getValue()).build());
+        Role role = roleRepository.findRoleByName(UserRole.ADMIN.getValue());
+        roles.add(role);
         UserInfo userInfo = UserInfo
                 .builder()
                 .email(request.getEmail())

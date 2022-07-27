@@ -36,6 +36,6 @@ public class SignUpRequest
   @JsonProperty("lastName")
   private String lastName;
 
-  @JsonProperty("phoen")
+  @JsonProperty("phone")
   private String phone;
 }
