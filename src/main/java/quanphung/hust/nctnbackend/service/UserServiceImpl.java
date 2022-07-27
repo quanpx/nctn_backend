@@ -80,7 +80,7 @@ public class UserServiceImpl implements UserService {
         String username = request.getUsername();
         boolean checkUserExist = checkUserExisted(username);
         List<Role> roles = new ArrayList<>();
-        Role role = roleRepository.findRoleByName(UserRole.ADMIN.getValue());
+        Role role = roleRepository.findRoleByName(UserRole.USER.getValue());
         roles.add(role);
         UserInfo userInfo = UserInfo
                 .builder()
