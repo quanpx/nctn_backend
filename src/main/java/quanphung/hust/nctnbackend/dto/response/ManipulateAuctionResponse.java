@@ -1,4 +1,4 @@
-package quanphung.hust.nctnbackend.dto.request;
+package quanphung.hust.nctnbackend.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -12,14 +12,20 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class UpdateItemRequest
+public class ManipulateAuctionResponse
 {
-  @JsonProperty("name")
-  private String name;
+  @JsonProperty("is_success")
+  private boolean isSuccess;
+
+  @JsonProperty("message")
+  private String message;
+
+  @JsonProperty("is_registered")
+  private boolean isRegistered;
 
   @JsonProperty("status")
   private String status;
 
-  @JsonProperty("id")
-  private Long id;
+  @JsonProperty("error")
+  private String error;
 }

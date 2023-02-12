@@ -29,19 +29,11 @@ public class BidInfo extends InitializationInfo
   @Column(name = "bid_price")
   private Long bidPrice;
 
-  @Column(name = "bid_time")
-  private int bidTime;
-
   @Column(name = "bid_status")
   private String status;
 
   @ManyToOne
   @JoinColumn(name = "lot_id")
   private LotInfo lotInfo;
-
-  public void increaseBidTime()
-  {
-    this.bidTime++;
-  }
 
 }

@@ -38,4 +38,7 @@ public class SignUpRequest
 
   @JsonProperty("phone")
   private String phone;
+
+  @JsonProperty("role")
+  private String role;
 }

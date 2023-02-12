@@ -1,5 +1,7 @@
 package quanphung.hust.nctnbackend.dto;
 
+import java.sql.Timestamp;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -17,30 +19,37 @@ import javax.persistence.Id;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class BidDto {
+public class BidDto
+{
 
-    @JsonProperty("id")
-    private Long Id;
+  @JsonProperty("id")
+  private Long Id;
 
-    @JsonProperty("lot_id")
-    private Long lotId;
+  @JsonProperty("lot_id")
+  private Long lotId;
 
-    @JsonProperty("lot_name")
-    private String lotName;
+  @JsonProperty("lot_name")
+  private String lotName;
 
-    @JsonProperty("lot_description")
-    private String lotDescription;
+  @JsonProperty("lot_description")
+  private String lotDescription;
 
-    @JsonProperty("bid_price")
-    private Long bidPrice;
+  @JsonProperty("bid_price")
+  private Long bidPrice;
 
-    @JsonProperty("bid_time")
-    private int bidTime;
+  @JsonProperty("bid_time")
+  private int bidTime;
 
-    @JsonProperty("status")
-    private String status;
+  @JsonProperty("created_at")
+  private Timestamp createdAt;
 
-    @JsonProperty("image_url")
-    private String lotImage;
+  @JsonProperty("status")
+  private String status;
+
+  @JsonProperty("image_url")
+  private String lotImage;
+
+  @JsonProperty("owner")
+  private String owner;
 
 }

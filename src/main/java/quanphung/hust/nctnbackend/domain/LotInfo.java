@@ -11,6 +11,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -19,6 +20,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
+import org.apache.commons.lang3.builder.HashCodeExclude;
 
 @Data
 @Builder
@@ -36,6 +39,7 @@ public class LotInfo extends InitializationInfo
   @Column(name = "name")
   private String name;
 
+  @Lob
   @Column(name="description")
   private String description;
 
@@ -46,7 +50,7 @@ public class LotInfo extends InitializationInfo
   private Long initPrice;
 
   @Column(name = "estm_price")
-  private Long estmPrice;
+  private String estmPrice;
 
   @Column(name = "is_sold")
   private boolean isSold;
@@ -66,10 +70,15 @@ public class LotInfo extends InitializationInfo
   @Column(name="order_in_session")
   private Integer orderInSession;
 
+  @Column(name="sold_for")
+  private String soldFor;
+
   @Column(name = "image_url")
   private String imageUrl;
   @ManyToOne
   @JoinColumn(name = "session_id")
+  @HashCodeExclude
+  @ToString.Exclude
   private AuctionSession session;
 
   public void increaseBidNum()

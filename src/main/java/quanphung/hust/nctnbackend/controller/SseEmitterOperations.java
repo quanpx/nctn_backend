@@ -7,15 +7,13 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 @RequestMapping(SseEmitterOperations.API_RESOURCE)
 public interface SseEmitterOperations {
+    String MEMBER_ID_HEADER = "MemberId";
     String API_RESOURCE = "/api/sse";
     String SUBSCRIBE="/subscribe";
-    String DISPATCH="/dispatch";
 
     @CrossOrigin
-    @GetMapping(value = SUBSCRIBE,consumes = MediaType.ALL_VALUE)
-   SseEmitter subscribe();
+    @GetMapping(value = SUBSCRIBE)
+    SseEmitter subscribeToEvents();
 
-    @PostMapping(value = DISPATCH)
-    void dispatch();
 
 }

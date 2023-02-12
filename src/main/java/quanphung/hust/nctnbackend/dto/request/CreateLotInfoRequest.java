@@ -25,7 +25,7 @@ public class CreateLotInfoRequest
   private Long currentPrice;
 
   @JsonProperty("estm_price")
-  private Long estmPrice;
+  private String estmPrice;
 
   @JsonProperty("step")
   private Long step;

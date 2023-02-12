@@ -4,14 +4,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
+import org.apache.catalina.security.SecurityUtil;
 import quanphung.hust.nctnbackend.domain.Role;
 import quanphung.hust.nctnbackend.dto.request.LoginRequest;
+import quanphung.hust.nctnbackend.dto.request.SearchBidRequest;
 import quanphung.hust.nctnbackend.dto.request.SignUpRequest;
 import quanphung.hust.nctnbackend.dto.response.AuthResponse;
+import quanphung.hust.nctnbackend.dto.response.BidResponse;
+import quanphung.hust.nctnbackend.dto.response.GetAuctionResponse;
 import quanphung.hust.nctnbackend.dto.response.RoleResponse;
 import quanphung.hust.nctnbackend.repository.RoleRepository;
+import quanphung.hust.nctnbackend.service.BidService;
 import quanphung.hust.nctnbackend.service.UserService;
 import quanphung.hust.nctnbackend.type.UserRole;
+import quanphung.hust.nctnbackend.utils.SecurityUtils;
 
 @RestController
 public class UserController implements UserOperations
@@ -19,6 +25,9 @@ public class UserController implements UserOperations
 
   @Autowired
   private UserService userService;
+
+  @Autowired
+  private BidService bidService;
 
   @Autowired
   private RoleRepository roleRepository;
@@ -41,6 +50,17 @@ public class UserController implements UserOperations
   public ResponseEntity<RoleResponse> getRoles()
   {
     return ResponseEntity.ok(userService.getRoles());
+  }
+
+  @Override
+  public ResponseEntity<BidResponse> getAllItems()
+  {
+    String userName = SecurityUtils.getCurrentUsername().orElse(null);
+    SearchBidRequest request = SearchBidRequest.builder()
+      .status("win")
+      .username(userName)
+      .build();
+    return ResponseEntity.ok(bidService.getAllBid(request));
   }
 
   @Override

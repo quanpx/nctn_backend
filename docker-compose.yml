@@ -1,0 +1,29 @@
+version: "3.8"
+services:
+  web:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8080"
+    depends_on:
+      - "db"
+    networks:
+      - backend
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/nctn_db
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=crquan07
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+  db:
+    image: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: crquan07
+      POSTGRES_USER: postgres
+      POSTGRES_DB: nctn_db
+    networks:
+      - backend
+networks:
+  backend:

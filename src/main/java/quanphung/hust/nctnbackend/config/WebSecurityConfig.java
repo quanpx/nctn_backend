@@ -24,68 +24,75 @@ import quanphung.hust.nctnbackend.service.UserService;
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
-public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
-    @Autowired
-    private UserService userService;
+public class WebSecurityConfig extends WebSecurityConfigurerAdapter
+{
+  @Autowired
+  private UserService userService;
 
-    @Autowired
-    private JwtTokenFilter jwtTokenFilter;
+  @Autowired
+  private JwtTokenFilter jwtTokenFilter;
 
-    @Autowired
-    private JwtTokenEntryPoint jwtTokenEntryPoint;
+  @Autowired
+  private JwtTokenEntryPoint jwtTokenEntryPoint;
 
-    @Bean
-    @Override
-    protected AuthenticationManager authenticationManager() throws Exception {
-        // TODO Auto-generated method stub
-        return super.authenticationManager();
-    }
+  @Bean
+  @Override
+  protected AuthenticationManager authenticationManager() throws Exception
+  {
+    // TODO Auto-generated method stub
+    return super.authenticationManager();
+  }
 
-    @Bean
-    public PasswordEncoder getPasswordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+  @Bean
+  public PasswordEncoder getPasswordEncoder()
+  {
+    return new BCryptPasswordEncoder();
+  }
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http
-                .cors()
-                .and()
-                .csrf().disable()
-                .authorizeRequests()
-                .antMatchers("/api/login", "/api/signup", "/","/api/sse/*").permitAll()
-                .antMatchers(HttpMethod.POST, "/api/lot").hasAuthority("admin")
-                .antMatchers(HttpMethod.POST, "/api/auction").hasAuthority("admin")
-                .antMatchers(HttpMethod.POST, "/api/bid").hasAuthority("user")
-                .antMatchers(HttpMethod.GET, "/api/lot", "/api/lot/{id}").permitAll()
-                .antMatchers(HttpMethod.GET, "/api/auction").permitAll()
-                .antMatchers(HttpMethod.GET, "/api/auction/{id}").permitAll()
-                .anyRequest().authenticated()
-                .and()
-                .logout()
-                .logoutUrl("/api/logout")
-                .logoutSuccessUrl("/")
-                .and()
-                .exceptionHandling().authenticationEntryPoint(jwtTokenEntryPoint).and();
+  @Override
+  protected void configure(HttpSecurity http) throws Exception
+  {
+    http
+      .cors()
+      .and()
+      .csrf().disable()
+      .authorizeRequests()
+      .antMatchers("/api/login", "/api/signup", "/", "/api/sse/*").permitAll()
+      .antMatchers(HttpMethod.POST, "/api/lot").hasAuthority("admin")
+      .antMatchers(HttpMethod.POST, "/api/auction").hasAuthority("admin")
+      .antMatchers(HttpMethod.POST, "/api/bid").hasAuthority("user")
+      .antMatchers(HttpMethod.GET, "/api/lot", "/api/lot/{id}").permitAll()
+      .antMatchers(HttpMethod.GET, "/api/auction").permitAll()
+      .antMatchers(HttpMethod.GET, "/api/auction/{id}").permitAll()
+      .antMatchers(HttpMethod.GET, "/api/sse/subscribe").permitAll()
+      .anyRequest().authenticated()
+      .and()
+      .logout()
+      .logoutUrl("/api/logout")
+      .logoutSuccessUrl("/")
+      .and()
+      .exceptionHandling().authenticationEntryPoint(jwtTokenEntryPoint).and();
 
-        http.addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class);
-    }
+    http.addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class);
+  }
 
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userService)
-                .passwordEncoder(getPasswordEncoder());
-    }
+  @Override
+  protected void configure(AuthenticationManagerBuilder auth) throws Exception
+  {
+    auth.userDetailsService(userService)
+      .passwordEncoder(getPasswordEncoder());
+  }
 
-    @Bean
-    public CorsFilter corsFilter() {
-        UrlBasedCorsConfigurationSource source =
-                new UrlBasedCorsConfigurationSource();
-        CorsConfiguration config = new CorsConfiguration();
-        config.addAllowedOrigin("*");
-        config.addAllowedHeader("*");
-        config.addAllowedMethod("*");
-        source.registerCorsConfiguration("/**", config);
-        return new CorsFilter(source);
-    }
+  @Bean
+  public CorsFilter corsFilter()
+  {
+    UrlBasedCorsConfigurationSource source =
+      new UrlBasedCorsConfigurationSource();
+    CorsConfiguration config = new CorsConfiguration();
+    config.addAllowedOrigin("*");
+    config.addAllowedHeader("*");
+    config.addAllowedMethod("*");
+    source.registerCorsConfiguration("/**", config);
+    return new CorsFilter(source);
+  }
 }

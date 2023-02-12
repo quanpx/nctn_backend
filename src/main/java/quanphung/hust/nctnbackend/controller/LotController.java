@@ -5,9 +5,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 import quanphung.hust.nctnbackend.dto.LotInfoDto;
+import quanphung.hust.nctnbackend.dto.request.BidRequest;
 import quanphung.hust.nctnbackend.dto.request.CreateLotInfoRequest;
 import quanphung.hust.nctnbackend.dto.request.GetLotRequest;
 import quanphung.hust.nctnbackend.dto.response.GetLotResponse;
+import quanphung.hust.nctnbackend.dto.response.ManipulateBidResponse;
+import quanphung.hust.nctnbackend.dto.response.ManipulateLotResponse;
 import quanphung.hust.nctnbackend.service.LotInfoService;
 
 @RestController
@@ -40,6 +43,13 @@ public class LotController implements LotOperations
   public void searchLot()
   {
 
+  }
+
+  @Override
+  public ResponseEntity<ManipulateLotResponse> markSold(BidRequest request)
+  {
+    ManipulateLotResponse response = lotInfoService.markSold(request);
+    return ResponseEntity.ok(response);
   }
 
   @Override

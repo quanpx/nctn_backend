@@ -1,9 +1,11 @@
 package quanphung.hust.nctnbackend.repository;
 
+import java.util.List;
+
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.transaction.Transactional;
 
-import antlr.StringUtils;
 import org.springframework.stereotype.Repository;
 
 import com.querydsl.core.BooleanBuilder;
@@ -11,11 +13,10 @@ import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.jpa.impl.JPAQuery;
 import quanphung.hust.nctnbackend.domain.BidInfo;
+import quanphung.hust.nctnbackend.domain.LotInfo;
 import quanphung.hust.nctnbackend.domain.QBidInfo;
 import quanphung.hust.nctnbackend.dto.filter.BidFilter;
 import quanphung.hust.nctnbackend.utils.DataFilterUtils;
-
-import java.util.List;
 
 @Repository
 public class BidRepositoryCustomImpl implements BidRepositoryCustom
@@ -24,7 +25,8 @@ public class BidRepositoryCustomImpl implements BidRepositoryCustom
   private EntityManager em;
 
   @Override
-  public BidInfo findBidInfoByUsernameAndLot(String username, Long lotId)
+  @Transactional
+  public List<BidInfo> findBidInfoByUsernameAndLot(String username, Long lotId)
   {
     QBidInfo qBidInfo = QBidInfo.bidInfo;
     JPAQuery<?> query = new JPAQuery<>(em);
@@ -38,7 +40,7 @@ public class BidRepositoryCustomImpl implements BidRepositoryCustom
       .from(qBidInfo)
       .where(whereClause)
       .orderBy(orderSpecifier)
-      .fetchFirst();
+      .fetch();
   }
 
   @Override
@@ -73,6 +75,20 @@ public class BidRepositoryCustomImpl implements BidRepositoryCustom
             .limit(size)
             .offset((long)page*size)
             .fetchCount();
+  }
+
+  @Override
+  public List<BidInfo> findAllByLotInfo(LotInfo lotInfo)
+  {
+    JPAQuery<?> query = new JPAQuery<>(em);
+    QBidInfo qBidInfo = QBidInfo.bidInfo;
+    OrderSpecifier<String> orderSpecifier= new OrderSpecifier<>(Order.DESC, qBidInfo.createdDate.stringValue());
+    return query.select(qBidInfo)
+      .from(qBidInfo)
+      .where(qBidInfo.lotInfo.id.eq(lotInfo.getId()))
+      .orderBy(orderSpecifier)
+      .limit(10)
+      .fetch();
   }
 
   private BooleanBuilder buildWhereClause(BidFilter filter) {

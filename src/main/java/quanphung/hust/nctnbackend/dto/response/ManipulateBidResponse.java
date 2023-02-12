@@ -1,4 +1,4 @@
-package quanphung.hust.nctnbackend.dto.request;
+package quanphung.hust.nctnbackend.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -9,23 +9,14 @@ import lombok.NoArgsConstructor;
 
 @Data
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class BidRequest
+public class ManipulateBidResponse
 {
-  @JsonProperty("bid_id")
-  private Long bidId;
-
-  @JsonProperty("user")
-  private String user;
-
-  @JsonProperty("lot_id")
-  private Long lotId;
-
-  @JsonProperty("auction_id")
-  private Long auctionId;
+  @JsonProperty("is_bid")
+  private boolean isBid;
 
   @JsonProperty("bid_price")
-  private Long bidPrice;
+  private Long price;
 }

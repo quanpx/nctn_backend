@@ -25,4 +25,9 @@ public class BidResponse
 
   @JsonProperty("error")
   private String error;
+
+  @JsonProperty("message")
+  private String message;
+
+
 }

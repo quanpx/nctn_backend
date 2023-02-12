@@ -10,15 +10,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @NoArgsConstructor
-public class BidMessage {
+public class AuctionMessage
+{
+    @JsonProperty("description")
+    private String description;
 
-    @JsonProperty("price")
-    private Long price;
-
-    @JsonProperty("owner")
-    private String owner;
-
-    @JsonProperty("name")
-    private String name;
+    @JsonProperty("status")
+    private String status;
 
 }

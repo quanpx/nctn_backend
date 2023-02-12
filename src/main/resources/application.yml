@@ -21,7 +21,7 @@ spring:
     url: jdbc:postgresql://localhost:5432/nctn_db
     driver-class-name: org.postgresql.Driver
     username: nctn
-    password: crquan07
+    password: Crquan07!
 
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect

@@ -1,4 +1,6 @@
-package quanphung.hust.nctnbackend.dto.request;
+package quanphung.hust.nctnbackend.dto;
+
+import java.sql.Timestamp;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -12,14 +14,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class UpdateItemRequest
+public class UserAuctionDto
 {
-  @JsonProperty("name")
-  private String name;
+  @JsonProperty("auction")
+  private AuctionDTO auctionDTO;
 
-  @JsonProperty("status")
-  private String status;
-
-  @JsonProperty("id")
-  private Long id;
+  @JsonProperty("created_at")
+  private Timestamp createdAt;
 }

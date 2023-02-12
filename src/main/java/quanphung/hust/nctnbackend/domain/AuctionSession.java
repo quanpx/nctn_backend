@@ -9,8 +9,8 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 
 import lombok.AllArgsConstructor;
@@ -57,7 +57,14 @@ public class AuctionSession extends InitializationInfo
   @Column(name="image_url")
   private String imageUrl;
 
+  @Column(name = "current_lot")
+  private Integer currLot;
+
+  @Column(name = "next_lot")
+  private Integer nextLot;
+
   @OneToMany(fetch = FetchType.LAZY,mappedBy = "session")
+  @OrderBy("orderInSession ASC")
   private List<LotInfo> itemsInSession;
 
   public void increaseRegisterNumber()

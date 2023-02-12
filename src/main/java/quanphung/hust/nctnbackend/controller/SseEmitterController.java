@@ -2,6 +2,7 @@ package quanphung.hust.nctnbackend.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import quanphung.hust.nctnbackend.dto.sse.BidMessage;
@@ -16,33 +17,14 @@ import java.util.concurrent.CopyOnWriteArrayList;
 @RestController
 @Slf4j
 public class SseEmitterController implements SseEmitterOperations {
-    public static List<SseEmitter> emitters=new CopyOnWriteArrayList<>();
+
 
     @Autowired
     private SseService sseService;
 
     @Override
-    public SseEmitter subscribe() {
-        SseEmitter emitter = new SseEmitter();
-        try
-        {
-            emitter.send(SseEmitter.event().name("Init"));
-        }catch (IOException ex)
-        {
-            log.error(ex.getMessage());
-        }
-        emitter.onCompletion(()-> emitters.remove(emitter));
-        emitter.onTimeout(()->emitters.remove(emitter));
-        emitters.add(emitter);
-        return emitter;
+      public SseEmitter subscribeToEvents() {
+        return sseService.createEmitter();
     }
 
-    @Override
-    public void dispatch() {
-        BidMessage message = BidMessage.builder()
-                .currentPrice("1000")
-                .message("Have bid 1000s")
-                .build();
-        sseService.dispatchEvent(message);
-    }
 }

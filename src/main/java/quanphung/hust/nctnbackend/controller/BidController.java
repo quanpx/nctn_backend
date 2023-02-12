@@ -3,9 +3,11 @@ package quanphung.hust.nctnbackend.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
+
 import quanphung.hust.nctnbackend.dto.request.BidRequest;
 import quanphung.hust.nctnbackend.dto.request.SearchBidRequest;
 import quanphung.hust.nctnbackend.dto.response.BidResponse;
+import quanphung.hust.nctnbackend.dto.response.ManipulateBidResponse;
 import quanphung.hust.nctnbackend.service.BidService;
 import quanphung.hust.nctnbackend.utils.SecurityUtils;
 
@@ -35,4 +37,16 @@ public class BidController implements BidOperations{
                 .build();
         return ResponseEntity.ok(bidService.getAllBid(request));
     }
+
+  @Override
+  public ResponseEntity<BidResponse> getBidInAuction(Long lotId)
+  {
+    return ResponseEntity.ok(bidService.getBidInAuction(lotId));
+  }
+
+  @Override
+  public ResponseEntity<ManipulateBidResponse> isBid(Long lotId)
+  {
+    return ResponseEntity.ok(bidService.isBid(lotId));
+  }
 }

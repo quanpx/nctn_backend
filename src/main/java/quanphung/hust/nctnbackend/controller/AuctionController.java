@@ -7,14 +7,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
-import quanphung.hust.nctnbackend.dto.request.BidRequest;
 import quanphung.hust.nctnbackend.dto.request.CreateAuctionRequest;
 import quanphung.hust.nctnbackend.dto.request.GetAuctionRequest;
 import quanphung.hust.nctnbackend.dto.request.UpdateItemRequest;
 import quanphung.hust.nctnbackend.dto.response.AuctionDetailResponse;
 import quanphung.hust.nctnbackend.dto.response.AuctionStatusResponse;
-import quanphung.hust.nctnbackend.dto.response.BidResponse;
 import quanphung.hust.nctnbackend.dto.response.GetAuctionResponse;
+import quanphung.hust.nctnbackend.dto.response.GetUserAuctionResponse;
+import quanphung.hust.nctnbackend.dto.response.ManipulateAuctionResponse;
 import quanphung.hust.nctnbackend.service.AuctionService;
 import quanphung.hust.nctnbackend.type.SessionStatus;
 
@@ -25,6 +25,12 @@ public class AuctionController implements AuctionOperations
   private AuctionService auctionService;
 
   @Override
+  public ResponseEntity<GetUserAuctionResponse> getRegisteredAuctions()
+  {
+    return ResponseEntity.ok(auctionService.registeredAuctions());
+  }
+
+  @Override
   public void createAuction(CreateAuctionRequest request)
   {
     auctionService.createAuction(request);
@@ -33,7 +39,7 @@ public class AuctionController implements AuctionOperations
   @Override
   public void updateAuction(UpdateItemRequest request)
   {
-
+    auctionService.updateAuction(request);
   }
 
   @Override
@@ -57,9 +63,11 @@ public class AuctionController implements AuctionOperations
   }
 
   @Override
-  public void registerAuction(Long auctionId)
+  public ResponseEntity<ManipulateAuctionResponse> registerAuction(Long auctionId)
   {
-    auctionService.registerAuction(auctionId);
+    ManipulateAuctionResponse response = auctionService.registerAuction(auctionId);
+
+    return response.isSuccess() ? ResponseEntity.ok(response) : ResponseEntity.badRequest().build();
   }
 
   @Override
@@ -73,6 +81,12 @@ public class AuctionController implements AuctionOperations
     }
     response.setStatus(statusList);
     return ResponseEntity.ok(response);
+  }
+
+  @Override
+  public ResponseEntity<ManipulateAuctionResponse> isRegistered(Long id)
+  {
+    return ResponseEntity.ok(auctionService.isRegistered(id));
   }
 
   @Override
@@ -91,6 +105,18 @@ public class AuctionController implements AuctionOperations
   public ResponseEntity<AuctionDetailResponse> getAuctionDetail(Long id)
   {
     return ResponseEntity.ok(auctionService.getAuctionDetail(id));
+  }
+
+  @Override
+  public ResponseEntity<AuctionDetailResponse> handleNext(Long id)
+  {
+    return ResponseEntity.ok(auctionService.handleNext(id));
+  }
+
+  @Override
+  public ResponseEntity<AuctionDetailResponse> handleEnd(Long id)
+  {
+    return ResponseEntity.ok(auctionService.handleEnd(id));
   }
 
 }

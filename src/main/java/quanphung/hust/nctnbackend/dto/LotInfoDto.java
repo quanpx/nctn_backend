@@ -29,8 +29,11 @@ public class LotInfoDto
   @JsonProperty("current_price")
   private Long currentPrice;
 
+  @JsonProperty("init_price")
+  private Long initPrice;
+
   @JsonProperty("estm_price")
-  private Long estmPrice;
+  private String estmPrice;
 
   @JsonProperty("order_in_lot")
   private Integer orderLot;
@@ -40,6 +43,9 @@ public class LotInfoDto
 
   @JsonProperty("is_sold")
   private boolean isSold;
+
+  @JsonProperty("sold_for")
+  private String soldFor;
 
   @JsonProperty("sold_price")
   private Long soldPrice;

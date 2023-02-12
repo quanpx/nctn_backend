@@ -20,6 +20,9 @@ public class AuctionDTO
   @JsonProperty("name")
   private String name;
 
+  @JsonProperty("status")
+  private String status;
+
   @JsonProperty("description")
   private String description;
 

@@ -1,5 +1,6 @@
 package quanphung.hust.nctnbackend.dto.response;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -9,25 +10,16 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import quanphung.hust.nctnbackend.dto.AuctionDTO;
-import quanphung.hust.nctnbackend.dto.LotInfoDto;
+import quanphung.hust.nctnbackend.dto.UserAuctionDto;
 
 @Data
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class AuctionDetailResponse
+public class GetUserAuctionResponse
 {
-  @JsonProperty("lots")
-  private List<LotInfoDto> lotInfos;
-
-  @JsonProperty("current_lot")
-  private Integer currLot;
-
-  @JsonProperty("next_lot")
-  private Integer nextLot;
-
-  @JsonProperty("auction")
-  private AuctionDTO auctionDTO;
+  @JsonProperty("registered_auctions")
+  private List<UserAuctionDto> userAuctionDtoList;
 
 }

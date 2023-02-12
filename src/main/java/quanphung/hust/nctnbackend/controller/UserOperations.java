@@ -8,7 +8,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import quanphung.hust.nctnbackend.dto.request.LoginRequest;
 import quanphung.hust.nctnbackend.dto.request.SignUpRequest;
+import quanphung.hust.nctnbackend.dto.response.AuctionDetailResponse;
 import quanphung.hust.nctnbackend.dto.response.AuthResponse;
+import quanphung.hust.nctnbackend.dto.response.BidResponse;
+import quanphung.hust.nctnbackend.dto.response.GetAuctionResponse;
 import quanphung.hust.nctnbackend.dto.response.RoleResponse;
 
 @RequestMapping(UserOperations.API_RESOURCE)
@@ -22,6 +25,9 @@ public interface UserOperations
   String SIGNUP = "/signup";
   String ROLES ="/roles";
 
+  String ITEMS = "/items";
+
+
   @PostMapping(LOGIN)
   ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request);
 
@@ -30,6 +36,9 @@ public interface UserOperations
 
   @GetMapping(ROLES)
   ResponseEntity<RoleResponse> getRoles();
+
+
+  ResponseEntity<BidResponse> getAllItems();
 
   @PostMapping(ROLES)
   void createRole();
