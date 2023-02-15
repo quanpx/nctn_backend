@@ -49,7 +49,8 @@ public class AuctionController implements AuctionOperations
     Long createdAt,
     Long startTime,
     String status,
-    String[] orderByColumns)
+    String[] orderByColumns,
+    String text)
   {
     GetAuctionRequest request = GetAuctionRequest.builder()
       .size(size)
@@ -58,6 +59,7 @@ public class AuctionController implements AuctionOperations
       .createdAt(createdAt)
       .status(status)
       .orderByColumns(orderByColumns)
+      .text(text)
       .build();
     return ResponseEntity.ok(auctionService.getAuctions(request));
   }

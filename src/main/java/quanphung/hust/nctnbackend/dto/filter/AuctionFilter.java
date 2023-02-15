@@ -16,4 +16,6 @@ public class AuctionFilter
   private Long startTime;
 
   private String status;
+
+  private String text;
 }

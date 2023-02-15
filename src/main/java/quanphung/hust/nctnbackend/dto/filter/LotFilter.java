@@ -15,9 +15,11 @@ public class LotFilter
 
   private Boolean isSold;
 
-  private Long minEstmPrice;
+  private Long minPrice;
 
-  private Long maxEstmPrice;
+  private Long maxPrice;
+
+  private Long session;
 
   private Integer orderInSession;
 }

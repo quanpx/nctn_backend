@@ -21,5 +21,7 @@ public class GetAuctionRequest
 
   private String status;
 
+  private String text;
+
   private String[] orderByColumns;
 }

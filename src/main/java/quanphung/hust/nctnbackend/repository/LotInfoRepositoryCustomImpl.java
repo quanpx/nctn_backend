@@ -6,6 +6,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
 
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.OrderSpecifier;
@@ -47,7 +48,40 @@ public class LotInfoRepositoryCustomImpl implements LotInfoRepositoryCustom
 
   private BooleanBuilder buildWhereClause(LotFilter filter)
   {
-    return new BooleanBuilder();
+    QLotInfo qLotInfo = QLotInfo.lotInfo;
+    BooleanBuilder builder = new BooleanBuilder();
+
+    String name = filter.getName();
+    if (StringUtils.hasText(name))
+    {
+      builder.and(qLotInfo.name.containsIgnoreCase(name));
+    }
+
+    Long session = filter.getSession();
+    if(session != null)
+    {
+      builder.and(qLotInfo.session.Id.eq(session));
+    }
+
+    Boolean isSold = filter.getIsSold();
+    if (isSold != null)
+    {
+      builder.and(qLotInfo.isSold.eq(isSold));
+    }
+
+    Long minPrice = filter.getMinPrice();
+    if (minPrice != null)
+    {
+      builder.and(qLotInfo.initPrice.goe(minPrice));
+    }
+
+    Long maxPrice = filter.getMaxPrice();
+    if (maxPrice != null)
+    {
+      builder.and(qLotInfo.initPrice.loe(maxPrice));
+    }
+
+    return builder;
   }
 
   @Override
@@ -56,9 +90,6 @@ public class LotInfoRepositoryCustomImpl implements LotInfoRepositoryCustom
     Integer page,
     LotFilter filter)
   {
-    size = DataFilterUtils.resolveSize(size);
-    page = DataFilterUtils.resolvePage(page);
-
     BooleanBuilder whereClause = buildWhereClause(filter);
     JPAQuery<?> query = new JPAQuery<>(em);
 
@@ -66,8 +97,6 @@ public class LotInfoRepositoryCustomImpl implements LotInfoRepositoryCustom
     return query.select(qLotInfo)
       .from(qLotInfo)
       .where(whereClause)
-      .limit(size)
-      .offset((long)page * size)
       .fetchCount();
   }
 }

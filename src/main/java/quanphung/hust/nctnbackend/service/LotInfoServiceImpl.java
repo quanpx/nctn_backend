@@ -82,19 +82,7 @@ public class LotInfoServiceImpl implements LotInfoService
     if (lotOpt.isPresent())
     {
       LotInfo lot = lotOpt.get();
-      return LotInfoDto.builder()
-        .id(lot.getId().toString())
-        .name(lot.getName())
-        .bidNum(lot.getBidNum())
-        .currentPrice(lot.getCurrentPrice())
-        .description(lot.getDescription())
-        .estmPrice(lot.getEstmPrice())
-        .orderLot(lot.getOrderInSession())
-        .session(lot.getSession().getId().toString())
-        .startTime(lot.getSession().getStartTime())
-        .imageUrl(lot.getImageUrl())
-        .initPrice(lot.getInitPrice())
-        .build();
+      return mapping.convertToDto(lot);
     }
     else
     {
@@ -114,8 +102,9 @@ public class LotInfoServiceImpl implements LotInfoService
       .name(request.getName())
       .isSold(request.getIsSold())
       .orderInSession(request.getOrderInSession())
-      .maxEstmPrice(request.getMaxEstmPrice())
-      .minEstmPrice(request.getMinEstmPrice())
+      .maxPrice(request.getMaxPrice())
+      .minPrice(request.getMinPrice())
+      .session(request.getSession())
       .build();
     GetLotResponse response;
     try

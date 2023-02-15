@@ -9,7 +9,6 @@ import quanphung.hust.nctnbackend.dto.request.BidRequest;
 import quanphung.hust.nctnbackend.dto.request.CreateLotInfoRequest;
 import quanphung.hust.nctnbackend.dto.request.GetLotRequest;
 import quanphung.hust.nctnbackend.dto.response.GetLotResponse;
-import quanphung.hust.nctnbackend.dto.response.ManipulateBidResponse;
 import quanphung.hust.nctnbackend.dto.response.ManipulateLotResponse;
 import quanphung.hust.nctnbackend.service.LotInfoService;
 
@@ -58,18 +57,18 @@ public class LotController implements LotOperations
     Integer size,
     String name,
     Boolean isSold,
-    Integer session,
-    Long minEstmPrice,
-    Long maxEstmPrice,
+    Long session,
+    Long minPrice,
+    Long maxPrice,
     String[] orderByColumns)
   {
     GetLotRequest request= GetLotRequest.builder()
       .name(name)
       .isSold(isSold)
       .orderByColumns(orderByColumns)
-      .orderInSession(session)
-      .minEstmPrice(minEstmPrice)
-      .maxEstmPrice(maxEstmPrice)
+      .minPrice(minPrice)
+      .maxPrice(maxPrice)
+      .session(session)
       .page(page)
       .size(size)
       .build();

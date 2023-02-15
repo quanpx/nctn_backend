@@ -1,11 +1,13 @@
 package quanphung.hust.nctnbackend.repository;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
 
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.OrderSpecifier;
@@ -44,7 +46,29 @@ public class AuctionRepositoryCustomImpl implements AuctionRepositoryCustom
 
   private BooleanBuilder buildWhereClause(AuctionFilter filter)
   {
+
+    QAuctionSession auctionSession = QAuctionSession.auctionSession;
     BooleanBuilder booleanBuilder = new BooleanBuilder();
+    String text = filter.getText();
+
+    if (StringUtils.hasText(text))
+    {
+      booleanBuilder.and(auctionSession.name.containsIgnoreCase(text));
+    }
+
+    String status = filter.getStatus();
+    if (StringUtils.hasText(status))
+    {
+      booleanBuilder.and(auctionSession.status.equalsIgnoreCase(status));
+    }
+
+    Long value = filter.getStartTime();
+    if (value != null)
+    {
+      Timestamp startTime = new Timestamp(value);
+      booleanBuilder.and(auctionSession.startTime.after(startTime));
+    }
+
     return booleanBuilder;
   }
 

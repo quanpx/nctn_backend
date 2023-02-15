@@ -111,6 +111,7 @@ public class AuctionServiceImpl implements AuctionService
       .createdAt(request.getCreatedAt())
       .startTime(request.getStartTime())
       .status(request.getStatus())
+      .text(request.getText())
       .build();
     try
     {

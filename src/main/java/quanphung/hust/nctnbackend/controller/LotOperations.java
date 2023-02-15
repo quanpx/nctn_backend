@@ -38,9 +38,9 @@ public interface LotOperations
     @RequestParam(name="size",required = false) Integer size,
     @RequestParam(name = "name",required = false) String name,
     @RequestParam(name = "isSold",required = false) Boolean isSold,
-    @RequestParam(name = "session",required = false) Integer session,
-    @RequestParam(name = "minEstmPrice",required = false) Long minEstmPrice,
-    @RequestParam(name = "maxEstmPrice",required = false) Long maxEstmPrice,
+    @RequestParam(name = "session",required = false) Long session,
+    @RequestParam(name = "minPrice",required = false) Long minEstmPrice,
+    @RequestParam(name = "maxPrice",required = false) Long maxEstmPrice,
     @RequestParam(name="orderBy" ,required = false) String[] orderByColumns
   );
 

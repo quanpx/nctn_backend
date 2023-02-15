@@ -4,7 +4,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -54,8 +53,8 @@ public interface AuctionOperations
     @RequestParam(name = "created_at", required = false) Long createdAt,
     @RequestParam(name = "start_time", required = false) Long startTime,
     @RequestParam(name = "status", required = false) String status,
-    @RequestParam(name = "orderBy", required = false) String[] orderByColumns
-  );
+    @RequestParam(name = "orderBy", required = false) String[] orderByColumns,
+    @RequestParam(name="text", required = false) String text);
 
   @GetMapping(REGISTER)
   ResponseEntity<ManipulateAuctionResponse> registerAuction(@RequestParam(name = "id") Long auctionId);
