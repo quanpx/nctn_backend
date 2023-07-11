@@ -15,6 +15,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.querydsl.core.types.OrderSpecifier;
 import lombok.extern.slf4j.Slf4j;
 import quanphung.hust.nctnbackend.domain.BidInfo;
+import quanphung.hust.nctnbackend.domain.LikedItem;
 import quanphung.hust.nctnbackend.domain.LotInfo;
 import quanphung.hust.nctnbackend.dto.LotInfoDto;
 import quanphung.hust.nctnbackend.dto.filter.LotFilter;
@@ -30,8 +31,10 @@ import quanphung.hust.nctnbackend.exception.InvalidSortColumnException;
 import quanphung.hust.nctnbackend.exception.InvalidSortOrderException;
 import quanphung.hust.nctnbackend.mapping.LotMapping;
 import quanphung.hust.nctnbackend.repository.BidInfoRepository;
+import quanphung.hust.nctnbackend.repository.LikedItemRepository;
 import quanphung.hust.nctnbackend.repository.LotInfoRepository;
 import quanphung.hust.nctnbackend.repository.orderutils.LotOrderUtils;
+import quanphung.hust.nctnbackend.utils.SecurityUtils;
 
 @Service
 @Slf4j
@@ -48,6 +51,9 @@ public class LotInfoServiceImpl implements LotInfoService
 
   @Autowired
   private BidInfoRepository bidInfoRepository;
+
+  @Autowired
+  private LikedItemRepository likedItemRepository;
 
   @Override
   public void createLotInfo(CreateLotInfoRequest request)
@@ -177,6 +183,39 @@ public class LotInfoServiceImpl implements LotInfoService
     else
     {
       response.setError("Mark sold failed!");
+    }
+    return response;
+  }
+
+  @Override
+  public ManipulateLotResponse add2Favorite(Long id)
+  {
+
+    ManipulateLotResponse response = new ManipulateLotResponse();
+    Optional<LotInfo> lotOpt = lotInfoRepository.findById(id);
+    String user = SecurityUtils.getCurrentUsername().orElse("system");
+    if (lotOpt.isPresent())
+    {
+      LotInfo lot = lotOpt.get();
+
+      Optional<LikedItem>  likedItemOpt = likedItemRepository.findLikedItemByCreatedByAndAndLotInfo(user,lot);
+      if(likedItemOpt.isPresent())
+      {
+        LikedItem likedItem = likedItemOpt.get();
+
+        likedItemRepository.delete(likedItem);
+        response.setMessage("Remove from favorite success!");
+      }else
+      {
+        LikedItem item = LikedItem.builder()
+          .lotInfo(lot)
+          .build();
+        item = likedItemRepository.save(item);
+        response.setMessage("Add to favorite success!");
+      }
+    }else
+    {
+      response.setMessage("Add to favorite failed!");
     }
     return response;
   }

@@ -80,4 +80,10 @@ public class LotController implements LotOperations
   {
     return ResponseEntity.ok(lotInfoService.getLotDetail(id));
   }
+
+  @Override
+  public ResponseEntity<ManipulateLotResponse> add2Favorite(Long id)
+  {
+    return ResponseEntity.ok(lotInfoService.add2Favorite(id));
+  }
 }

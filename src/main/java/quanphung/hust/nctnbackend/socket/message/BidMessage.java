@@ -1,14 +1,18 @@
 package quanphung.hust.nctnbackend.socket.message;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class HelloMessage {
+public class BidMessage extends Message
+{
+  private String from;
 
-  private String name;
+  private String to;
+
+  private Double price;
 }

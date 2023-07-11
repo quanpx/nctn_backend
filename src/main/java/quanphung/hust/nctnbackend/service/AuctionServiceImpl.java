@@ -238,7 +238,14 @@ public class AuctionServiceImpl implements AuctionService
       AuctionSession auction = auctionOpt.get();
       if (StringUtils.hasText(request.getStatus()))
       {
-        auction.setStatus(request.getStatus());
+        String status = request.getStatus();
+        auction.setStatus(status);
+        if(status.equals("start"))
+        {
+          auction.setStream(true);
+          auction.setCurrLot(1);
+          auction.setNextLot(2);
+        }
       }
       try
       {

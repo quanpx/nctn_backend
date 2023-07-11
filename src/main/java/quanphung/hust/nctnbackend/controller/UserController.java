@@ -1,18 +1,27 @@
 package quanphung.hust.nctnbackend.controller;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 import org.apache.catalina.security.SecurityUtil;
+import quanphung.hust.nctnbackend.domain.LikedItem;
 import quanphung.hust.nctnbackend.domain.Role;
+import quanphung.hust.nctnbackend.dto.LotInfoDto;
 import quanphung.hust.nctnbackend.dto.request.LoginRequest;
 import quanphung.hust.nctnbackend.dto.request.SearchBidRequest;
 import quanphung.hust.nctnbackend.dto.request.SignUpRequest;
 import quanphung.hust.nctnbackend.dto.response.AuthResponse;
 import quanphung.hust.nctnbackend.dto.response.BidResponse;
 import quanphung.hust.nctnbackend.dto.response.GetAuctionResponse;
+import quanphung.hust.nctnbackend.dto.response.GetLotResponse;
 import quanphung.hust.nctnbackend.dto.response.RoleResponse;
+import quanphung.hust.nctnbackend.mapping.LotMapping;
+import quanphung.hust.nctnbackend.repository.LikedItemRepository;
 import quanphung.hust.nctnbackend.repository.RoleRepository;
 import quanphung.hust.nctnbackend.service.BidService;
 import quanphung.hust.nctnbackend.service.UserService;
@@ -31,6 +40,7 @@ public class UserController implements UserOperations
 
   @Autowired
   private RoleRepository roleRepository;
+
 
 
   @Override
@@ -61,6 +71,12 @@ public class UserController implements UserOperations
       .username(userName)
       .build();
     return ResponseEntity.ok(bidService.getAllBid(request));
+  }
+
+  @Override
+  public ResponseEntity<GetLotResponse> getFavorites()
+  {
+    return ResponseEntity.ok(userService.getFavorites());
   }
 
   @Override

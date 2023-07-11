@@ -19,4 +19,6 @@ public interface LotInfoService
   GetLotResponse getLotInfos(GetLotRequest request);
 
   ManipulateLotResponse markSold(BidRequest request);
+
+  ManipulateLotResponse add2Favorite(Long id);
 }

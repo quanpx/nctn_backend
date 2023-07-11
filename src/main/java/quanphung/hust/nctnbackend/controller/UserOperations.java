@@ -12,6 +12,7 @@ import quanphung.hust.nctnbackend.dto.response.AuctionDetailResponse;
 import quanphung.hust.nctnbackend.dto.response.AuthResponse;
 import quanphung.hust.nctnbackend.dto.response.BidResponse;
 import quanphung.hust.nctnbackend.dto.response.GetAuctionResponse;
+import quanphung.hust.nctnbackend.dto.response.GetLotResponse;
 import quanphung.hust.nctnbackend.dto.response.RoleResponse;
 
 @RequestMapping(UserOperations.API_RESOURCE)
@@ -27,7 +28,7 @@ public interface UserOperations
 
   String ITEMS = "/items";
 
-
+  String FAVORITES="/favorites";
   @PostMapping(LOGIN)
   ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request);
 
@@ -39,6 +40,8 @@ public interface UserOperations
 
 
   ResponseEntity<BidResponse> getAllItems();
+  @GetMapping(FAVORITES)
+  ResponseEntity<GetLotResponse> getFavorites();
 
   @PostMapping(ROLES)
   void createRole();

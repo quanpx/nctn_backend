@@ -53,11 +53,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter
   protected void configure(HttpSecurity http) throws Exception
   {
     http
+      .headers()
+      .frameOptions()
+      .disable()
+      .and()
       .cors()
       .and()
       .csrf().disable()
       .authorizeRequests()
-      .antMatchers("/api/login", "/api/signup", "/", "/api/sse/*").permitAll()
+      .antMatchers("/api/login", "/api/signup", "/", "/api/sse/*","/nctn-ws/","/nctn-ws/**").permitAll()
       .antMatchers(HttpMethod.POST, "/api/lot").hasAuthority("admin")
       .antMatchers(HttpMethod.POST, "/api/auction").hasAuthority("admin")
       .antMatchers(HttpMethod.POST, "/api/bid").hasAuthority("user")
@@ -89,7 +93,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter
     UrlBasedCorsConfigurationSource source =
       new UrlBasedCorsConfigurationSource();
     CorsConfiguration config = new CorsConfiguration();
-    config.addAllowedOrigin("*");
+    config.setAllowCredentials(true);
+    config.addAllowedOrigin("http://localhost:3000");
     config.addAllowedHeader("*");
     config.addAllowedMethod("*");
     source.registerCorsConfiguration("/**", config);

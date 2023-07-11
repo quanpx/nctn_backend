@@ -1,5 +1,7 @@
 package quanphung.hust.nctnbackend.controller;
 
+import javax.ws.rs.Path;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,13 +25,15 @@ public interface LotOperations
 
   String MARK_AS_SOLD = LOT_RESOURCE+"/sold";
 
+  String ADD_TO_FAVORITE=LOT_RESOURCE+"/add2fav/{id}";
+
   @PostMapping(LOT_RESOURCE)
   void createLot(@RequestBody CreateLotInfoRequest request);
   void updateLot();
   void deleteLot();
   void searchLot();
 
-  @PutMapping(MARK_AS_SOLD)
+  @PostMapping (MARK_AS_SOLD)
   ResponseEntity<ManipulateLotResponse> markSold(@RequestBody BidRequest request);
 
   @GetMapping(LOT_RESOURCE)
@@ -48,4 +52,6 @@ public interface LotOperations
   @GetMapping(LOT_RESOURCE+"/{id}")
   ResponseEntity<LotInfoDto> getLotDetail(@PathVariable(name = "id") Long id);
 
+  @GetMapping(ADD_TO_FAVORITE)
+  ResponseEntity<ManipulateLotResponse> add2Favorite(@PathVariable(name = "id") Long id);
 }

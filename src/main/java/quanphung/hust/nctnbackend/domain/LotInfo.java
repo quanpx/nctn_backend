@@ -3,6 +3,7 @@ package quanphung.hust.nctnbackend.domain;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -12,6 +13,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -80,7 +82,6 @@ public class LotInfo extends InitializationInfo
   @HashCodeExclude
   @ToString.Exclude
   private AuctionSession session;
-
   public void increaseBidNum()
   {
     this.bidNum++;

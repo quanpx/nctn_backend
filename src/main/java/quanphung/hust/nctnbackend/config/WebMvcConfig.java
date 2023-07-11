@@ -18,7 +18,7 @@ import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 public class WebMvcConfig implements WebMvcConfigurer
 {
 
-  private static final String[] ALLOWED_ORIGINS = { "*" };
+  private static final String[] ALLOWED_ORIGINS = { "http://localhost:3000" };
 
   private static final String[] ALLOWED_METHODS = { "OPTIONS", "GET", "POST", "PUT", "DELETE", "PATCH", "HEAD" };
 
@@ -28,6 +28,7 @@ public class WebMvcConfig implements WebMvcConfigurer
   public void addCorsMappings(CorsRegistry registry)
   {
     registry.addMapping("/**")
+      .allowCredentials(true)
       .allowedOrigins(ALLOWED_ORIGINS)
       .allowedHeaders(ALLOWED_HEADERS)
       .allowedMethods(ALLOWED_METHODS);

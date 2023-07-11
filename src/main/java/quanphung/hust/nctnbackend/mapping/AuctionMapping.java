@@ -20,6 +20,7 @@ public class AuctionMapping implements BaseMapping<AuctionSession, AuctionDTO>
       .registerNum(session.getRegisterNum())
       .status(session.getStatus())
       .imageUrl(session.getImageUrl())
+      .isStream(session.isStream())
       .build();
   }
 

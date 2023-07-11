@@ -16,12 +16,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import quanphung.hust.nctnbackend.config.jwt.JwtTokenProvider;
+import quanphung.hust.nctnbackend.domain.LikedItem;
 import quanphung.hust.nctnbackend.domain.Role;
 import quanphung.hust.nctnbackend.domain.UserInfo;
+import quanphung.hust.nctnbackend.dto.LotInfoDto;
 import quanphung.hust.nctnbackend.dto.request.LoginRequest;
 import quanphung.hust.nctnbackend.dto.request.SignUpRequest;
 import quanphung.hust.nctnbackend.dto.response.AuthResponse;
+import quanphung.hust.nctnbackend.dto.response.GetLotResponse;
 import quanphung.hust.nctnbackend.dto.response.RoleResponse;
+import quanphung.hust.nctnbackend.mapping.LotMapping;
+import quanphung.hust.nctnbackend.repository.LikedItemRepository;
 import quanphung.hust.nctnbackend.repository.RoleRepository;
 import quanphung.hust.nctnbackend.repository.UserInfoRepository;
 import quanphung.hust.nctnbackend.security.CustomUserDetails;
@@ -57,6 +62,12 @@ public class UserServiceImpl implements UserService
 
   @Autowired
   private RoleRepository roleRepository;
+
+  @Autowired
+  private LikedItemRepository likedItemRepository;
+
+  @Autowired
+  private LotMapping lotMapping;
 
   @Override
   public AuthResponse login(LoginRequest request)
@@ -124,6 +135,25 @@ public class UserServiceImpl implements UserService
     return RoleResponse.builder()
       .roles(roles)
       .build();
+  }
+
+  @Override
+  @Transactional
+  public GetLotResponse getFavorites()
+  {
+    Optional<String> currentUserOpt = SecurityUtils.getCurrentUsername();
+    GetLotResponse response = new GetLotResponse();
+    if(currentUserOpt.isPresent())
+    {
+      String user = currentUserOpt.get();
+      List<LikedItem> likedItems = likedItemRepository.findLikedItemByCreatedBy(user);
+      List<LotInfoDto> lotInfoDtoList = likedItems.stream()
+        .map(item -> item.getLotInfo())
+        .map(item -> lotMapping.convertToDto(item))
+        .collect(Collectors.toList());
+      response.setLotInfoDtoList(lotInfoDtoList);
+    }
+    return response;
   }
 
   private boolean checkUserExisted(String username)

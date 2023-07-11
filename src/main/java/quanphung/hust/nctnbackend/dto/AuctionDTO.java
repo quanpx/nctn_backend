@@ -37,4 +37,7 @@ public class AuctionDTO
 
   @JsonProperty("image_url")
   private String imageUrl;
+
+  @JsonProperty("is_stream")
+  private boolean isStream;
 }

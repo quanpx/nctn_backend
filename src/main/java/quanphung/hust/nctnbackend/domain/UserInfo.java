@@ -2,6 +2,7 @@ package quanphung.hust.nctnbackend.domain;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -62,5 +63,6 @@ public class UserInfo implements Serializable
   )
   @JsonIgnore
   private List<Role> roles;
+
 
 }
