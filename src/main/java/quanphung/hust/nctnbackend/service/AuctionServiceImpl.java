@@ -1,21 +1,33 @@
 package quanphung.hust.nctnbackend.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.querydsl.core.types.OrderSpecifier;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.task.AsyncTaskExecutor;
+import org.springframework.messaging.simp.user.SimpUserRegistry;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.util.StringUtils;
 
+import quanphung.hust.nctnbackend.config.AsyncTaskConfig;
 import quanphung.hust.nctnbackend.domain.AuctionSession;
+import quanphung.hust.nctnbackend.domain.InitializationInfo;
+import quanphung.hust.nctnbackend.domain.Invoice;
 import quanphung.hust.nctnbackend.domain.LotInfo;
 import quanphung.hust.nctnbackend.domain.UserAuction;
+import quanphung.hust.nctnbackend.domain.UserInfo;
+import quanphung.hust.nctnbackend.domain.WonLot;
 import quanphung.hust.nctnbackend.dto.AuctionDTO;
 import quanphung.hust.nctnbackend.dto.LotInfoDto;
 import quanphung.hust.nctnbackend.dto.UserAuctionDto;
+import quanphung.hust.nctnbackend.dto.WonLotDto;
+import quanphung.hust.nctnbackend.dto.email.EmailDetails;
 import quanphung.hust.nctnbackend.dto.filter.AuctionFilter;
+import quanphung.hust.nctnbackend.dto.filter.LotFilter;
 import quanphung.hust.nctnbackend.dto.request.CreateAuctionRequest;
 import quanphung.hust.nctnbackend.dto.request.GetAuctionRequest;
 import quanphung.hust.nctnbackend.dto.request.UpdateItemRequest;
@@ -31,9 +43,16 @@ import quanphung.hust.nctnbackend.mapping.LotMapping;
 import quanphung.hust.nctnbackend.mapping.UserAuctionMapping;
 import quanphung.hust.nctnbackend.repository.AuctionSessionRepository;
 import quanphung.hust.nctnbackend.repository.BidInfoRepository;
+import quanphung.hust.nctnbackend.repository.InvoiceRepository;
 import quanphung.hust.nctnbackend.repository.LotInfoRepository;
 import quanphung.hust.nctnbackend.repository.UserAuctionRepository;
+import quanphung.hust.nctnbackend.repository.UserInfoRepository;
+import quanphung.hust.nctnbackend.repository.WonLotRepository;
 import quanphung.hust.nctnbackend.repository.orderutils.AuctionOrderUtils;
+import quanphung.hust.nctnbackend.repository.orderutils.LotOrderUtils;
+import quanphung.hust.nctnbackend.socket.controller.MessageController;
+import quanphung.hust.nctnbackend.socket.message.Message;
+import quanphung.hust.nctnbackend.socket.services.SocketService;
 import quanphung.hust.nctnbackend.type.SessionStatus;
 import quanphung.hust.nctnbackend.utils.SecurityUtils;
 
@@ -41,8 +60,13 @@ import javax.transaction.Transactional;
 import javax.ws.rs.BadRequestException;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -66,13 +90,41 @@ public class AuctionServiceImpl implements AuctionService
   private AuctionSessionRepository auctionSessionRepository;
 
   @Autowired
+  private UserInfoRepository userInfoRepository;
+
+  @Autowired
   private UserAuctionRepository userAuctionRepository;
 
   @Autowired
   private BidInfoRepository bidInfoRepository;
 
   @Autowired
+  private WonLotRepository wonLotRepository;
+
+  @Autowired
   private SseService sseService;
+
+  @Autowired
+  private MailService mailService;
+
+  @Autowired
+  private SocketService socketService;
+
+  @Autowired
+  private SimpUserRegistry simpUserRegistry;
+
+
+  @Autowired
+  private InvoiceRepository invoiceRepository;
+
+
+
+
+
+
+  @Autowired
+  @Qualifier(AsyncTaskConfig.TASK_EXECUTOR_BEAN)
+  private AsyncTaskExecutor executor;
 
   @Override
   @Transactional
@@ -143,6 +195,7 @@ public class AuctionServiceImpl implements AuctionService
   {
     ManipulateAuctionResponse response = new ManipulateAuctionResponse();
 
+    String username = SecurityUtils.getCurrentUsername().orElse("System");
     Optional<AuctionSession> auctionOpt = auctionSessionRepository.findById(auctionSession);
     if (auctionOpt.isPresent())
     {
@@ -162,6 +215,22 @@ public class AuctionServiceImpl implements AuctionService
         session = auctionSessionRepository.save(session);
 
         response.setSuccess(true);
+        Optional<UserInfo> userInfoOpt = userInfoRepository.findUserInfoByUsername(username);
+        if(userInfoOpt.isPresent())
+        {
+          UserInfo userInfo = userInfoOpt.get();
+          // Send email noti to user
+          EmailDetails mail = EmailDetails.builder()
+            .auctionName(session.getName())
+            .auctionId(session.getId())
+            .time(session.getStartTime().toString())
+            .subject("Registered auction successfully")
+            .msgBody("Registered auction successfully!")
+            .recipient(userInfo.getEmail())
+            .receiver(username)
+            .build();
+          mailService.sendMailWithThymeleaf(mail, "new-register-auction");
+        }
       }
     }
     else
@@ -220,13 +289,26 @@ public class AuctionServiceImpl implements AuctionService
       response.setCurrLot(auction.getCurrLot());
       response.setAuctionDTO(mapping.convertToDto(auction));
 
-      sseService.sendNotificationToAll("next", "Next event");
-      sseService.sendNotificationToAll("reload-bids", "Reload bids");
+      Optional<LotInfo> lotInfoOpt = lotInfoRepository.findByOrderInSessionAndSession(auction.getCurrLot(),auction);
+      if(lotInfoOpt.isPresent())
+      {
+        LotInfo lotInfo = lotInfoOpt.get();
+        Message message = Message.builder()
+          .message("Next lot")
+          .type("next-lot")
+          .nextLot(auction.getNextLot())
+          .currLot(lotMapping.convertToDto(lotInfo))
+          .build();
+
+        socketService.sendToAll(message, MessageController.TO_SPECIFIC_USER, null);
+      }
+
     }
     return response;
   }
 
   @Override
+  @Transactional
   public void updateAuction(UpdateItemRequest request)
   {
     ObjectMapper objectMapper = new ObjectMapper();
@@ -245,32 +327,160 @@ public class AuctionServiceImpl implements AuctionService
           auction.setStream(true);
           auction.setCurrLot(1);
           auction.setNextLot(2);
+
+          auction = auctionSessionRepository.save(auction);
+
+
+          Map<String,String> registeredEmailList = findAllRegisterEmail(auction);
+          EmailDetails emailDetails = EmailDetails.builder()
+            .auctionName(auction.getName())
+            .subject("Thông báo từ phiên đấu giá")
+            .auctionId(auction.getId())
+            .build();
+
+          sendStatusChangeEmail(registeredEmailList,emailDetails);
+        }else if(status.equals("end"))
+        {
+            handleEnd(auction);
         }
       }
-      try
-      {
-      auction = auctionSessionRepository.save(auction);
 
-      AuctionMessage message = AuctionMessage.builder()
-        .description("Update status")
-        .status(request.getStatus())
-        .build();
 
-        sseService.sendNotificationToAll("auction-update", objectMapper.writeValueAsString(message));
-      }
-      catch (JsonProcessingException e)
-      {
-        log.warn(e.getMessage());
-      }
     }
   }
-
-  @Override
-  public AuctionDetailResponse handleEnd(Long id)
+  private void sendStatusChangeEmail(Map<String,String> emails, EmailDetails emailDetails)
   {
+    for (Map.Entry<String, String> email : emails.entrySet())
+    {
+      log.info("Send email to " + email.getValue());
+      emailDetails.setRecipient(email.getValue());
+      emailDetails.setReceiver(email.getKey());
+      mailService.sendMailWithThymeleaf(emailDetails, "auction-started-email");
+    }
+
+  }
+  private Map<String,String> findAllRegisterEmail(AuctionSession auction)
+  {
+    List<UserAuction> userAuctions = userAuctionRepository.findUserAuctionByAuctionSession(auction);
+    Map<String,String> registeredEmails = new HashMap<>();
+    if(!userAuctions.isEmpty())
+    {
+      List<String> users = userAuctions.stream().map(InitializationInfo::getCreatedBy).collect(Collectors.toList());
+      for (String user: users)
+      {
+        Optional<UserInfo> userOpt = userInfoRepository.findUserInfoByUsername(user);
+        if(userOpt.isPresent())
+        {
+          UserInfo userInfo = userOpt.get();
+          String email = userInfo.getEmail();
+          registeredEmails.put(user,email);
+
+        }
+      }
+    }
+    return registeredEmails;
+  }
+
+
+  private AuctionDetailResponse handleEnd(AuctionSession auction)
+  {
+    Message message = Message.builder()
+      .message("Phiên đấu giá đã kết thúc.")
+      .type("auction-end")
+      .build();
+
+    socketService.sendToAll(message,MessageController.TO_SPECIFIC_USER,null);
+
+    executor.execute(() -> sendEmailAfterAuction(auction));
+
+    createInvoice(auction);
+
     return null;
   }
 
+
+  private void createInvoice(AuctionSession auction)
+  {
+    List<String> users = lotInfoRepository.getWonUsers(auction.getId());
+    Long auctionId = auction.getId();
+    for (String user : users)
+    {
+      if(StringUtils.hasText(user))
+      {
+        List<WonLot> wonLots = wonLotRepository.findWonLots(user, auctionId);
+
+        List<LotInfo> lotInfos = wonLots.stream().map(WonLot::getLot).collect(Collectors.toList());
+        Long total = lotInfos.stream()
+          .map(LotInfo::getSoldPrice)
+          .reduce(0L,Long::sum);
+
+        Invoice invoice = Invoice.builder()
+          .isPaid(false)
+          .total(total)
+          .customer(user)
+          .session(auction)
+          .build();
+
+        for (LotInfo lot:lotInfos)
+        {
+          invoice.addLotId(lot.getId());
+        }
+
+        invoice = invoiceRepository.save(invoice);
+
+
+
+        invoice = invoiceRepository.saveAndFlush(invoice);
+
+
+      }
+
+    }
+  }
+
+  @Async
+  protected void sendEmailAfterAuction(AuctionSession auction){
+    log.info("Running on thread - "+ Thread.currentThread().getName());
+    //
+    List<String> users = lotInfoRepository.getWonUsers(auction.getId());
+
+    for (String user: users)
+    {
+      Optional<UserInfo> userOpt = userInfoRepository.findUserInfoByUsername(user);
+      if(userOpt.isPresent())
+      {
+        UserInfo userInfo = userOpt.get();
+        String emailTo = userInfo.getEmail();
+        LotFilter filter = LotFilter.builder()
+          .soldFor(user)
+          .build();
+         try
+         {
+           OrderSpecifier<String>[] orderSpecifiers = LotOrderUtils.createOrderBy(null);
+           List<LotInfo> wonLots = lotInfoRepository.findLotInfoByPagingAndFilter(null,null,filter,orderSpecifiers);
+
+           List<LotInfoDto> lotInfoDtoList = wonLots.stream()
+             .map(lotInfo -> lotMapping.convertToDto(lotInfo))
+             .collect(Collectors.toList());
+
+           EmailDetails email = EmailDetails.builder()
+             .subject("Sản phẩm đã thắng")
+             .receiver(user)
+             .auctionName(auction.getName())
+             .recipient(emailTo)
+             .wonLots(lotInfoDtoList)
+             .build();
+
+           mailService.sendMailWithThymeleaf(email,"won-lot-total");
+         } catch (InvalidSortColumnException | InvalidSortOrderException e)
+         {
+           log.error(e.getMessage());
+           throw new BadRequestException("Invalid sort column!");
+         }
+
+      }
+    }
+  }
   @Override
   public GetUserAuctionResponse registeredAuctions()
   {
@@ -282,6 +492,34 @@ public class AuctionServiceImpl implements AuctionService
 
     return GetUserAuctionResponse.builder()
       .userAuctionDtoList(auctionDTOList).build();
+  }
+
+  @Override
+  public AuctionDetailResponse handleJoin(Long id)
+  {
+    Optional<AuctionSession> auctionOpt = auctionSessionRepository.findById(id);
+    AuctionDetailResponse response = new AuctionDetailResponse();
+    String username = SecurityUtils.getCurrentUsername().orElse("system");
+
+    if (auctionOpt.isPresent())
+    {
+      AuctionSession auction = auctionOpt.get();
+
+      List<LotInfo> lotInfos = auction.getItemsInSession();
+
+      response.setNextLot(auction.getNextLot());
+      response.setCurrLot(auction.getCurrLot());
+      response.setAuctionDTO(mapping.convertToDto(auction));
+
+      Message message = Message.builder()
+        .message("New join")
+        .type("new-join")
+        .users(simpUserRegistry.getUserCount())
+        .build();
+
+      socketService.sendToAll(message, MessageController.TO_SPECIFIC_USER, null);
+    }
+    return response;
   }
 
   private Integer getNextIndex(List<LotInfo> lotInfos, Integer currIdx)

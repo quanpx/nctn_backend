@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+<p>Xin chào <em th:text="${receiver}"></em></p>
+<p>Chúng mừng bạn đã mua được những món đồ yêu thích.</p>
+<p>Dưới đây là những món đồ bạn đã thắng trong phiên <em th:text="${auctionName}"></em></p>
+<p>Bạn có thể truy cập vào: <a th:href="@{'http://18.141.182.13/book-details/'}" th:text="${auctionName}"> để kiểm tra</a> </p>
+<p >Cảm ơn,</p>
+<p>
+    Để biết thêm thông tin chi tiết, vui lòng liên hệ qua <em th:text="${senderName}"></em> <br />
+</p>
+</body>
+</html>

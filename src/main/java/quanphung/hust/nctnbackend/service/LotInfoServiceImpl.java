@@ -8,6 +8,7 @@ import javax.transaction.Transactional;
 import javax.ws.rs.BadRequestException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -17,7 +18,10 @@ import lombok.extern.slf4j.Slf4j;
 import quanphung.hust.nctnbackend.domain.BidInfo;
 import quanphung.hust.nctnbackend.domain.LikedItem;
 import quanphung.hust.nctnbackend.domain.LotInfo;
+import quanphung.hust.nctnbackend.domain.UserInfo;
+import quanphung.hust.nctnbackend.domain.WonLot;
 import quanphung.hust.nctnbackend.dto.LotInfoDto;
+import quanphung.hust.nctnbackend.dto.email.EmailDetails;
 import quanphung.hust.nctnbackend.dto.filter.LotFilter;
 import quanphung.hust.nctnbackend.dto.request.BidRequest;
 import quanphung.hust.nctnbackend.dto.request.CreateLotInfoRequest;
@@ -33,7 +37,12 @@ import quanphung.hust.nctnbackend.mapping.LotMapping;
 import quanphung.hust.nctnbackend.repository.BidInfoRepository;
 import quanphung.hust.nctnbackend.repository.LikedItemRepository;
 import quanphung.hust.nctnbackend.repository.LotInfoRepository;
+import quanphung.hust.nctnbackend.repository.UserInfoRepository;
+import quanphung.hust.nctnbackend.repository.WonLotRepository;
 import quanphung.hust.nctnbackend.repository.orderutils.LotOrderUtils;
+import quanphung.hust.nctnbackend.socket.controller.MessageController;
+import quanphung.hust.nctnbackend.socket.message.Message;
+import quanphung.hust.nctnbackend.socket.services.SocketService;
 import quanphung.hust.nctnbackend.utils.SecurityUtils;
 
 @Service
@@ -54,6 +63,21 @@ public class LotInfoServiceImpl implements LotInfoService
 
   @Autowired
   private LikedItemRepository likedItemRepository;
+
+  @Autowired
+  private SimpMessagingTemplate simpMessagingTemplate;
+
+  @Autowired
+  private SocketService socketService;
+
+  @Autowired
+  private MailService mailService;
+
+  @Autowired
+  private WonLotRepository wonLotRepository;
+
+  @Autowired
+  private UserInfoRepository userInfoRepository;
 
   @Override
   public void createLotInfo(CreateLotInfoRequest request)
@@ -156,29 +180,48 @@ public class LotInfoServiceImpl implements LotInfoService
       lot = lotInfoRepository.save(lot);
 
       Optional<BidInfo> bidOptional = bidInfoRepository.findById(request.getBidId());
-      if(bidOptional.isPresent())
+      if (bidOptional.isPresent())
       {
         BidInfo bidInfo = bidOptional.get();
         bidInfo.setStatus("won");
 
         bidInfo = bidInfoRepository.save(bidInfo);
       }
-      sseService.sendNotificationToAll("auction-update","Lot update");
 
-      BidMessage message = BidMessage.builder()
+      // Save won lot to database
+      WonLot wonLot = WonLot.builder()
         .owner(owner)
-        .price(soldPrice)
-        .name(lot.getName())
+        .lot(lot)
+        .soldPrice(soldPrice)
+        .session(lot.getSession())
+        .paid(false)
         .build();
-      try
+      wonLot = wonLotRepository.save(wonLot);
+
+      Message messageSock = Message.builder()
+        .message("Lot sold")
+        .type("lot-sold")
+        .lotInfoDto(mapping.convertToDto(lot))
+        .build();
+
+      socketService.sendToUser(messageSock, owner, MessageController.TO_SPECIFIC_USER);
+
+      Optional<UserInfo> userInfoOpt = userInfoRepository.findUserInfoByUsername(owner);
+
+      if (userInfoOpt.isPresent())
       {
-        sseService.sendNotificationToAll("sold-for",objectMapper.writeValueAsString(message));
+        UserInfo userInfo = userInfoOpt.get();
+        String emailTo = userInfo.getEmail();
+
+        EmailDetails email = EmailDetails.builder()
+          .recipient(emailTo)
+          .receiver(owner)
+          .lotName(lot.getName())
+          .subject("Thông báo bạn đã thắng sản phẩm.")
+          .build();
+        mailService.sendMailWithThymeleaf(email, "won-lot");
+        response.setMessage("Mark sold successful!");
       }
-      catch (JsonProcessingException e)
-      {
-        log.warn(e.getMessage());
-      }
-      response.setMessage("Mark sold successful!");
     }
     else
     {
@@ -198,14 +241,15 @@ public class LotInfoServiceImpl implements LotInfoService
     {
       LotInfo lot = lotOpt.get();
 
-      Optional<LikedItem>  likedItemOpt = likedItemRepository.findLikedItemByCreatedByAndAndLotInfo(user,lot);
-      if(likedItemOpt.isPresent())
+      Optional<LikedItem> likedItemOpt = likedItemRepository.findLikedItemByCreatedByAndAndLotInfo(user, lot);
+      if (likedItemOpt.isPresent())
       {
         LikedItem likedItem = likedItemOpt.get();
 
         likedItemRepository.delete(likedItem);
         response.setMessage("Remove from favorite success!");
-      }else
+      }
+      else
       {
         LikedItem item = LikedItem.builder()
           .lotInfo(lot)
@@ -213,7 +257,8 @@ public class LotInfoServiceImpl implements LotInfoService
         item = likedItemRepository.save(item);
         response.setMessage("Add to favorite success!");
       }
-    }else
+    }
+    else
     {
       response.setMessage("Add to favorite failed!");
     }

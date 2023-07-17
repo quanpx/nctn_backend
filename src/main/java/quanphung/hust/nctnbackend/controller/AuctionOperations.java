@@ -35,6 +35,8 @@ public interface AuctionOperations
 
   String END = "/end";
 
+  String JOIN = "/join";
+
   String REGISTER_AUCTION = "/register_auctions";
 
   @GetMapping(REGISTER_AUCTION)
@@ -77,4 +79,7 @@ public interface AuctionOperations
 
   @GetMapping(END)
   ResponseEntity<AuctionDetailResponse> handleEnd(@RequestParam(name = "id") Long id);
+
+  @GetMapping(JOIN)
+  ResponseEntity<AuctionDetailResponse> handleJoin(@RequestParam(name="id") Long id);
 }

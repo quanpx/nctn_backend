@@ -60,7 +60,6 @@ public class JwtTokenFilter extends OncePerRequestFilter
       }else
       {
         filterChain.doFilter(request, response);
-        return;
       }
 
 

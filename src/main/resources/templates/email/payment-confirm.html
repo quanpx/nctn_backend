@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+<p>Xin chào <em th:text="${receiver}"></em></p>
+<p>Bạn đã thanh toán sản phẩm đã thắng trong phiên đấu giá <em th:text="${auctionName}"></em></p>
+<p>Thời gian giao dịch: <em th:text="${time}"></em></p>
+<p>Chúng tôi gửi email, xác nhận lại thông tin thanh toán. </p>
+<table  style="width:300px">
+    <tr>
+        <th> Tên </th>
+        <th> Giá </th>
+    </tr>
+    <th:block th:each="lot : ${wonLots}">
+        <tr>
+            <td th:text="${lot.name}"></td>
+            <td th:text="${lot.soldPrice}"></td>
+        </tr>
+    </th:block>
+    <tr>
+        <td>Tổng</td>
+        <td th:text="${total}"></td>
+    </tr>
+</table>
+<p th:text="regards"></p>
+<p>
+    Để biêt thêm thông tin chi tiết, vui lòng liên hệ qua <em th:text="${senderName}"></em> <br />
+</p>
+</body>
+</html>

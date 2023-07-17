@@ -1,5 +1,6 @@
 package quanphung.hust.nctnbackend.domain;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -25,6 +26,13 @@ public class UserAuction extends InitializationInfo
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
+
+
+  @Column(name = "status_in_auction")
+  private String statusUser;
+
+  @Column(name="is_registered")
+  private boolean isRegistered;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "seesion_id")

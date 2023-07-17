@@ -3,6 +3,7 @@ package quanphung.hust.nctnbackend.service;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.user.SimpUserRegistry;
 import org.springframework.stereotype.Service;
 
 import quanphung.hust.nctnbackend.domain.BidInfo;
@@ -17,6 +18,9 @@ import quanphung.hust.nctnbackend.dto.response.ManipulateBidResponse;
 import quanphung.hust.nctnbackend.mapping.BidMapping;
 import quanphung.hust.nctnbackend.repository.BidInfoRepository;
 import quanphung.hust.nctnbackend.repository.LotInfoRepository;
+import quanphung.hust.nctnbackend.socket.controller.MessageController;
+import quanphung.hust.nctnbackend.socket.message.Message;
+import quanphung.hust.nctnbackend.socket.services.SocketService;
 import quanphung.hust.nctnbackend.type.BidStatus;
 import quanphung.hust.nctnbackend.utils.SecurityUtils;
 
@@ -49,6 +53,12 @@ public class BidServiceImpl implements BidService
   @Autowired
   private BidInfoRepository bidInfoRepository;
 
+  @Autowired
+  private SimpUserRegistry simpUserRegistry;
+
+  @Autowired
+  private SocketService socketService;
+
   @Override
   @Transactional
   public BidResponse bidLot(BidRequest request)
@@ -56,6 +66,8 @@ public class BidServiceImpl implements BidService
     BidResponse response = new BidResponse();
 
     Optional<LotInfo> lotInfoOpt = lotInfoRepository.findById(request.getLotId());
+
+    log.info("Have new bid");
 
     BidInfo bidInfo;
     if (lotInfoOpt.isPresent())
@@ -76,8 +88,16 @@ public class BidServiceImpl implements BidService
       lotInfo.setCurrentPrice(currentPrice);
       lotInfo = lotInfoRepository.save(lotInfo);
 
-      sseService.sendNotificationToAll("bid","New bid");
-      sseService.sendNotificationToAll("auction-update","New current price");
+
+      BidResponse bidResponse = getBidInAuction((request.getLotId()));
+
+      Message message = Message.builder()
+        .message("Have new bid")
+        .type("new-bid")
+        .bidInfo(bidResponse)
+        .build();
+
+      socketService.sendToAll(message, MessageController.TO_SPECIFIC_USER,null);
 
     }
     else {

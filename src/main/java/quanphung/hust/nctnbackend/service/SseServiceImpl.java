@@ -1,24 +1,16 @@
 package quanphung.hust.nctnbackend.service;
 
-import lombok.extern.slf4j.Slf4j;
+import java.io.IOException;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
-import quanphung.hust.nctnbackend.controller.SseEmitterController;
+import lombok.extern.slf4j.Slf4j;
 import quanphung.hust.nctnbackend.dto.EventDto;
-import quanphung.hust.nctnbackend.dto.sse.BidMessage;
 import quanphung.hust.nctnbackend.mapping.EventMapping;
-import quanphung.hust.nctnbackend.repository.EmitterRepository;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 @Service
 @Slf4j

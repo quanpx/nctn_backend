@@ -14,6 +14,7 @@ import quanphung.hust.nctnbackend.dto.response.BidResponse;
 import quanphung.hust.nctnbackend.dto.response.GetAuctionResponse;
 import quanphung.hust.nctnbackend.dto.response.GetLotResponse;
 import quanphung.hust.nctnbackend.dto.response.RoleResponse;
+import quanphung.hust.nctnbackend.dto.response.YourItemsResponse;
 
 @RequestMapping(UserOperations.API_RESOURCE)
 public interface UserOperations
@@ -42,6 +43,9 @@ public interface UserOperations
   ResponseEntity<BidResponse> getAllItems();
   @GetMapping(FAVORITES)
   ResponseEntity<GetLotResponse> getFavorites();
+
+  @GetMapping(ITEMS)
+  ResponseEntity<YourItemsResponse> GetYourItems();
 
   @PostMapping(ROLES)
   void createRole();

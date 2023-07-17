@@ -24,7 +24,8 @@ public interface AuctionService
 
   void updateAuction(UpdateItemRequest request);
 
-  AuctionDetailResponse handleEnd(Long id);
 
   GetUserAuctionResponse registeredAuctions();
+
+  AuctionDetailResponse handleJoin(Long id);
 }

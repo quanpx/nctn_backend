@@ -22,4 +22,6 @@ public class LotFilter
   private Long session;
 
   private Integer orderInSession;
+
+  private String soldFor;
 }

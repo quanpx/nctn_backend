@@ -13,4 +13,6 @@ public interface UserAuctionRepository extends JpaRepository<UserAuction, Long>
 {
     UserAuction findUserAuctionByCreatedByAndAuctionSession(String name, AuctionSession session);
     List<UserAuction> findAllByCreatedBy(String name);
+
+    List<UserAuction> findUserAuctionByAuctionSession(AuctionSession auction);
 }

@@ -16,19 +16,27 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import quanphung.hust.nctnbackend.config.jwt.JwtTokenProvider;
+import quanphung.hust.nctnbackend.domain.AuctionSession;
 import quanphung.hust.nctnbackend.domain.LikedItem;
+import quanphung.hust.nctnbackend.domain.LotInfo;
 import quanphung.hust.nctnbackend.domain.Role;
 import quanphung.hust.nctnbackend.domain.UserInfo;
+import quanphung.hust.nctnbackend.domain.WonLot;
+import quanphung.hust.nctnbackend.dto.AuctionDTO;
 import quanphung.hust.nctnbackend.dto.LotInfoDto;
+import quanphung.hust.nctnbackend.dto.WonLotDto;
 import quanphung.hust.nctnbackend.dto.request.LoginRequest;
 import quanphung.hust.nctnbackend.dto.request.SignUpRequest;
 import quanphung.hust.nctnbackend.dto.response.AuthResponse;
 import quanphung.hust.nctnbackend.dto.response.GetLotResponse;
 import quanphung.hust.nctnbackend.dto.response.RoleResponse;
+import quanphung.hust.nctnbackend.dto.response.YourItemsResponse;
+import quanphung.hust.nctnbackend.mapping.AuctionMapping;
 import quanphung.hust.nctnbackend.mapping.LotMapping;
 import quanphung.hust.nctnbackend.repository.LikedItemRepository;
 import quanphung.hust.nctnbackend.repository.RoleRepository;
 import quanphung.hust.nctnbackend.repository.UserInfoRepository;
+import quanphung.hust.nctnbackend.repository.WonLotRepository;
 import quanphung.hust.nctnbackend.security.CustomUserDetails;
 import quanphung.hust.nctnbackend.type.UserRole;
 import quanphung.hust.nctnbackend.utils.SecurityUtils;
@@ -36,7 +44,9 @@ import quanphung.hust.nctnbackend.utils.SecurityUtils;
 import javax.transaction.Transactional;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -68,6 +78,12 @@ public class UserServiceImpl implements UserService
 
   @Autowired
   private LotMapping lotMapping;
+
+  @Autowired
+  private AuctionMapping auctionMapping;
+
+  @Autowired
+  private WonLotRepository wonLotRepository;
 
   @Override
   public AuthResponse login(LoginRequest request)
@@ -143,7 +159,7 @@ public class UserServiceImpl implements UserService
   {
     Optional<String> currentUserOpt = SecurityUtils.getCurrentUsername();
     GetLotResponse response = new GetLotResponse();
-    if(currentUserOpt.isPresent())
+    if (currentUserOpt.isPresent())
     {
       String user = currentUserOpt.get();
       List<LikedItem> likedItems = likedItemRepository.findLikedItemByCreatedBy(user);
@@ -154,6 +170,85 @@ public class UserServiceImpl implements UserService
       response.setLotInfoDtoList(lotInfoDtoList);
     }
     return response;
+  }
+
+  @Override
+  public UserInfo getUserbyUsername(String username)
+  {
+    Optional<UserInfo> userInfoOpt = userInfoRepository.findUserInfoByUsername(username);
+    if (userInfoOpt.isPresent())
+    {
+      return userInfoOpt.get();
+    }
+    return null;
+  }
+
+  @Override
+  public YourItemsResponse getYourItems()
+  {
+    String username = SecurityUtils.getCurrentUsername().orElse("datn");
+    List<WonLot> wonLots = wonLotRepository.findWonLots(username,null);
+    Map<AuctionDTO,List<LotInfoDto>> yourItemsMap = new HashMap<>();
+
+    Long currAuctionId=wonLots.get(0).getSession().getId();
+
+
+    List<WonLotDto> wonLotDtos = new ArrayList<>();
+
+    boolean isPaid = false;
+
+    for (WonLot wl:wonLots)
+    {
+
+      isPaid = wl.isPaid();
+
+      Long auctionId = wl.getSession().getId();
+
+      AuctionSession auctionSession = wl.getSession();
+      AuctionDTO auctionDTO = auctionMapping.convertToDto(auctionSession);
+      LotInfo lotInfo = wl.getLot();
+      LotInfoDto lotInfoDto = lotMapping.convertToDto(lotInfo);
+      if(yourItemsMap.isEmpty())
+      {
+        List<LotInfoDto> lotInfoDtos = new ArrayList<>();
+        lotInfoDtos.add(lotInfoDto);
+        yourItemsMap.put(auctionDTO,lotInfoDtos);
+      }else
+      {
+        if(auctionId.equals(currAuctionId))
+        {
+          yourItemsMap.get(auctionDTO).add(lotInfoDto);
+        }else
+        {
+          List<LotInfoDto> lotInfoDtos = new ArrayList<>();
+          lotInfoDtos.add(lotInfoDto);
+          yourItemsMap.put(auctionDTO,lotInfoDtos);
+          currAuctionId = wl.getSession().getId();
+        }
+      }
+
+    }
+
+    for (Map.Entry<AuctionDTO, List<LotInfoDto>> entry : yourItemsMap.entrySet()) {
+      {
+        AuctionDTO auctionDTO = entry.getKey();
+        List<LotInfoDto> lotInfoDtoList = entry.getValue();
+        Long total = lotInfoDtoList.stream()
+          .map(LotInfoDto::getSoldPrice)
+          .reduce(0L,Long::sum);
+
+        WonLotDto wonLotDto = WonLotDto.builder()
+          .isPaid(isPaid)
+          .total(total)
+          .lotInfoDtos(lotInfoDtoList)
+          .auctionDTO(auctionDTO).build();
+
+        wonLotDtos.add(wonLotDto);
+      }}
+
+    return YourItemsResponse.builder()
+      .wonLotDtos(wonLotDtos)
+      .build();
   }
 
   private boolean checkUserExisted(String username)

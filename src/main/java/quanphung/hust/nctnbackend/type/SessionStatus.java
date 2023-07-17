@@ -8,9 +8,9 @@ import lombok.Getter;
 public enum SessionStatus
 {
   CREATED("Created"),
-  STARTING("Starting"),
+  STARTING("Started"),
   FINISHED("Finished");
 
-  private  String status;
+  private String status;
 
 }

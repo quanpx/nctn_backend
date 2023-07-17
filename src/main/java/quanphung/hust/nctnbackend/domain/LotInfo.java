@@ -17,7 +17,9 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -77,11 +79,14 @@ public class LotInfo extends InitializationInfo
 
   @Column(name = "image_url")
   private String imageUrl;
+
+
   @ManyToOne
   @JoinColumn(name = "session_id")
   @HashCodeExclude
   @ToString.Exclude
   private AuctionSession session;
+
   public void increaseBidNum()
   {
     this.bidNum++;

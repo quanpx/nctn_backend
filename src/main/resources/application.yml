@@ -29,6 +29,22 @@ spring:
       ddl-auto: update
     defer-datasource-initialization: true
 
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: auctionantique.app@gmail.com
+    password: jukvgduvhdapcdej
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+          ## From java 11.0.11 need update ssl protocols to tlsv1.2
+          ssl:
+            protocols: TLSv1.2
+
   main:
     allow-circular-references: true
 

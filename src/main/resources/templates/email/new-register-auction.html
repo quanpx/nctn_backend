@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+<p>Xin chào <em th:text="${receiver}"></em></p>
+<p>Bạn đã đăng ký phiên đấu giá <em th:text="${auctionName}"></em> </p>
+<p>Phiên đấu giá được bắt đầu vào: <em th:text="${auctionTime}"></em>  </p>
+<p>Bạn có thể tìm hiểu thông tin chi tiết tại: <a th:href="@{'http://18.141.182.13/book-details/'+${auctionTime}}" th:text="${auctionName}"></a> </p>
+<p th:text="regards"></p>
+<p>
+    Để biêt thêm thông tin chi tiết, vui lòng liên hệ qua <em th:text="${senderName}"></em> <br />
+</p>
+</body>
+</html>

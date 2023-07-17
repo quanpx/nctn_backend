@@ -118,7 +118,13 @@ public class AuctionController implements AuctionOperations
   @Override
   public ResponseEntity<AuctionDetailResponse> handleEnd(Long id)
   {
-    return ResponseEntity.ok(auctionService.handleEnd(id));
+    return null;
+  }
+
+  @Override
+  public ResponseEntity<AuctionDetailResponse> handleJoin(Long id)
+  {
+    return ResponseEntity.ok(auctionService.handleJoin(id));
   }
 
 }

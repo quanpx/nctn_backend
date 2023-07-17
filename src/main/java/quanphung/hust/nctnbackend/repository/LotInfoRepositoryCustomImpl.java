@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.transaction.Transactional;
 
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
@@ -23,6 +24,7 @@ public class LotInfoRepositoryCustomImpl implements LotInfoRepositoryCustom
   private EntityManager em;
 
   @Override
+  @Transactional
   public List<LotInfo> findLotInfoByPagingAndFilter(
     Integer size,
     Integer page,
@@ -55,6 +57,12 @@ public class LotInfoRepositoryCustomImpl implements LotInfoRepositoryCustom
     if (StringUtils.hasText(name))
     {
       builder.and(qLotInfo.name.containsIgnoreCase(name));
+    }
+
+    String soldFor = filter.getSoldFor();
+    if(StringUtils.hasText(soldFor))
+    {
+      builder.and(qLotInfo.soldFor.eq(soldFor));
     }
 
     Long session = filter.getSession();
@@ -98,5 +106,18 @@ public class LotInfoRepositoryCustomImpl implements LotInfoRepositoryCustom
       .from(qLotInfo)
       .where(whereClause)
       .fetchCount();
+  }
+
+  @Override
+  public List<String> getWonUsers(Long id)
+  {
+    JPAQuery<?> query = new JPAQuery<>(em);
+    QLotInfo qLotInfo = QLotInfo.lotInfo;
+
+    return query.select(qLotInfo.soldFor)
+      .from(qLotInfo)
+      .where(qLotInfo.session.Id.eq(id))
+      .distinct()
+      .fetch();
   }
 }

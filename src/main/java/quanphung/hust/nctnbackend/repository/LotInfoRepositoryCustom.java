@@ -20,4 +20,6 @@ public interface LotInfoRepositoryCustom
     Integer page,
     LotFilter filter
   );
+
+  List<String> getWonUsers(Long id);
 }

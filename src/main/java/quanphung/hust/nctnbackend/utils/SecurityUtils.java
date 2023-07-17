@@ -51,7 +51,31 @@ public final class SecurityUtils
       return Optional.empty();
     }
   }
+  public static Optional<String> getCurrentEmail()
+  {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
+    if (authentication == null || authentication.getPrincipal() == null)
+    {
+      return Optional.empty();
+    }
+
+    // Resolve username depend on type of principal.
+    Object principal = authentication.getPrincipal();
+    if (principal instanceof String)
+    {
+      return Optional.of(principal.toString());
+    }
+    else if (principal instanceof CustomUserDetails)
+    {
+      CustomUserDetails userDetails = (CustomUserDetails)principal;
+      return Optional.of(userDetails.getUserInfo().getEmail());
+    }
+    else
+    {
+      return Optional.empty();
+    }
+  }
   /**
    * @return
    */

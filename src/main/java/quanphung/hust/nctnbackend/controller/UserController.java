@@ -20,6 +20,7 @@ import quanphung.hust.nctnbackend.dto.response.BidResponse;
 import quanphung.hust.nctnbackend.dto.response.GetAuctionResponse;
 import quanphung.hust.nctnbackend.dto.response.GetLotResponse;
 import quanphung.hust.nctnbackend.dto.response.RoleResponse;
+import quanphung.hust.nctnbackend.dto.response.YourItemsResponse;
 import quanphung.hust.nctnbackend.mapping.LotMapping;
 import quanphung.hust.nctnbackend.repository.LikedItemRepository;
 import quanphung.hust.nctnbackend.repository.RoleRepository;
@@ -77,6 +78,12 @@ public class UserController implements UserOperations
   public ResponseEntity<GetLotResponse> getFavorites()
   {
     return ResponseEntity.ok(userService.getFavorites());
+  }
+
+  @Override
+  public ResponseEntity<YourItemsResponse> GetYourItems()
+  {
+    return ResponseEntity.ok(userService.getYourItems());
   }
 
   @Override

@@ -34,7 +34,7 @@ public interface LotOperations
   void searchLot();
 
   @PostMapping (MARK_AS_SOLD)
-  ResponseEntity<ManipulateLotResponse> markSold(@RequestBody BidRequest request);
+  ResponseEntity<ManipulateLotResponse> markSold(@RequestBody(required = false) BidRequest request);
 
   @GetMapping(LOT_RESOURCE)
   ResponseEntity<GetLotResponse> getLotInfos(
