@@ -50,7 +50,7 @@ public class LotInfo extends InitializationInfo
   @Column(name="current_price")
   private Long currentPrice;
 
-  @Column(name="init_price")
+  @Column(name=ColumnName.INIT_PRICE)
   private Long initPrice;
 
   @Column(name = "estm_price")
@@ -90,5 +90,16 @@ public class LotInfo extends InitializationInfo
   public void increaseBidNum()
   {
     this.bidNum++;
+  }
+
+  public static class ColumnName
+  {
+
+    private ColumnName()
+    {
+    }
+
+    public static final String INIT_PRICE = "init_price";
+
   }
 }

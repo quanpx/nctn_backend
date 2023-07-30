@@ -39,7 +39,7 @@ public class AuctionRepositoryCustomImpl implements AuctionRepositoryCustom
       .from(auctionSession)
       .where(whereClause)
       .limit(size)
-      .offset((long)page * size)
+      .offset((long)(page-1) * size)
       .orderBy(orderByColumns)
       .fetch();
   }

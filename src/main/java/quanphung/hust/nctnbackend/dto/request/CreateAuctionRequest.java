@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class CreateAuctionRequest
+public class  CreateAuctionRequest
 {
   @JsonProperty("item_ids")
   private List<Long> itemIds;

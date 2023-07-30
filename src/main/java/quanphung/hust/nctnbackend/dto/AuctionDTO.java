@@ -40,4 +40,7 @@ public class AuctionDTO
 
   @JsonProperty("is_stream")
   private boolean isStream;
+
+  @JsonProperty("pending_request")
+  private int pending;
 }

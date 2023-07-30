@@ -13,7 +13,7 @@ public final class DataFilterConstants
     {
     }
 
-    public static final int DEFAULT_PAGE = 0;
+    public static final int DEFAULT_PAGE = 1    ;
   }
 
   public static final class Size

@@ -64,6 +64,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter
       .antMatchers("/api/login", "/api/signup", "/", "/api/sse/*","/nctn-ws/","/nctn-ws/**").permitAll()
       .antMatchers(HttpMethod.POST, "/api/lot").hasAuthority("admin")
       .antMatchers(HttpMethod.POST, "/api/auction").hasAuthority("admin")
+      .antMatchers(HttpMethod.POST,"/api/auction/requests","/api/auction/requests/**").hasAuthority("admin")
       .antMatchers(HttpMethod.POST, "/api/bid").hasAuthority("user")
       .antMatchers(HttpMethod.GET, "/api/lot", "/api/lot/{id}").permitAll()
       .antMatchers(HttpMethod.GET, "/api/auction").permitAll()

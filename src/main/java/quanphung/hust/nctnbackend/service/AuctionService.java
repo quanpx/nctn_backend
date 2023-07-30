@@ -1,5 +1,6 @@
 package quanphung.hust.nctnbackend.service;
 
+import quanphung.hust.nctnbackend.dto.filter.UserAuctionFilter;
 import quanphung.hust.nctnbackend.dto.request.CreateAuctionRequest;
 import quanphung.hust.nctnbackend.dto.request.GetAuctionRequest;
 import quanphung.hust.nctnbackend.dto.request.UpdateItemRequest;
@@ -28,4 +29,8 @@ public interface AuctionService
   GetUserAuctionResponse registeredAuctions();
 
   AuctionDetailResponse handleJoin(Long id);
+
+  ManipulateAuctionResponse approveRequest(Long id, boolean approve);
+
+  AuctionDetailResponse getAllRequests(UserAuctionFilter filter);
 }

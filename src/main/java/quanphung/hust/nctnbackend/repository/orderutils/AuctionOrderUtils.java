@@ -3,6 +3,8 @@ package quanphung.hust.nctnbackend.repository.orderutils;
 import java.util.Collections;
 import java.util.List;
 
+import org.springframework.stereotype.Component;
+
 import com.querydsl.core.types.OrderSpecifier;
 import quanphung.hust.nctnbackend.domain.InitializationInfo;
 import quanphung.hust.nctnbackend.domain.QAuctionSession;

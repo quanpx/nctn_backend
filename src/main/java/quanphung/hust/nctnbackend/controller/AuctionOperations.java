@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import quanphung.hust.nctnbackend.dto.AuctionDTO;
 import quanphung.hust.nctnbackend.dto.request.CreateAuctionRequest;
 import quanphung.hust.nctnbackend.dto.request.UpdateItemRequest;
 import quanphung.hust.nctnbackend.dto.response.AuctionDetailResponse;
@@ -30,6 +31,9 @@ public interface AuctionOperations
   String IS_REGISTERED = "/isregistered";
 
   String UPDATE_AUCTION_STATUS = "/updatestatus";
+
+  String REGISTER_REQUEST = "/requests";
+  String APPROVE_REGISTER_REQUEST = "/approve";
 
   String NEXT = "/next";
 
@@ -70,6 +74,17 @@ public interface AuctionOperations
   void deleteItem();
 
   void searchItem();
+
+  @GetMapping(REGISTER_REQUEST)
+  ResponseEntity<AuctionDetailResponse> getAllRequests(
+    @RequestParam(name="id",required = false) Long auctionId,
+    @RequestParam(name="owner",required = false) String owner,
+    @RequestParam(name="status", required = false) String status);
+
+  @GetMapping(APPROVE_REGISTER_REQUEST)
+  ResponseEntity<ManipulateAuctionResponse> approveRequest(
+    @RequestParam(name = "id") Long id,
+    @RequestParam(name="approve") boolean approve);
 
   @GetMapping(AUCTION_DETAIL)
   ResponseEntity<AuctionDetailResponse> getAuctionDetail(@PathVariable(name = "id") Long id);

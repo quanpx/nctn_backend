@@ -43,7 +43,7 @@ public class LotInfoRepositoryCustomImpl implements LotInfoRepositoryCustom
       .from(qLotInfo)
       .where(whereClause)
       .limit(size)
-      .offset((long)page * size)
+      .offset((long)(page-1) * size)
       .orderBy(orderByColumns)
       .fetch();
   }

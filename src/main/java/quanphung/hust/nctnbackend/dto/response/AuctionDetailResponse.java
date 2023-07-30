@@ -10,6 +10,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import quanphung.hust.nctnbackend.dto.AuctionDTO;
 import quanphung.hust.nctnbackend.dto.LotInfoDto;
+import quanphung.hust.nctnbackend.dto.UserAuctionDto;
 
 @Data
 @Builder
@@ -29,5 +30,10 @@ public class AuctionDetailResponse
 
   @JsonProperty("auction")
   private AuctionDTO auctionDTO;
+
+  @JsonProperty("register_requests")
+  private List<UserAuctionDto> userAuctionDtos;
+
+
 
 }

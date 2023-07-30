@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
+import quanphung.hust.nctnbackend.dto.filter.UserAuctionFilter;
 import quanphung.hust.nctnbackend.dto.request.CreateAuctionRequest;
 import quanphung.hust.nctnbackend.dto.request.GetAuctionRequest;
 import quanphung.hust.nctnbackend.dto.request.UpdateItemRequest;
@@ -101,6 +102,23 @@ public class AuctionController implements AuctionOperations
   public void searchItem()
   {
 
+  }
+
+  @Override
+  public ResponseEntity<AuctionDetailResponse> getAllRequests(Long auctionId, String owner,String status)
+  {
+    UserAuctionFilter filter = UserAuctionFilter.builder()
+      .auctionId(auctionId)
+      .owner(owner)
+      .status(status)
+      .build();
+    return ResponseEntity.ok(auctionService.getAllRequests(filter));
+  }
+
+  @Override
+  public ResponseEntity<ManipulateAuctionResponse> approveRequest(Long id, boolean approve)
+  {
+    return ResponseEntity.ok(auctionService.approveRequest(id,approve));
   }
 
   @Override

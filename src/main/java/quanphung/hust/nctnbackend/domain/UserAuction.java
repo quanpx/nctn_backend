@@ -21,7 +21,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Entity
 @Table(name = "user_auction")
-public class UserAuction extends InitializationInfo
+public class UserAuction extends Auditable
 {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,6 +33,11 @@ public class UserAuction extends InitializationInfo
 
   @Column(name="is_registered")
   private boolean isRegistered;
+
+
+  @Column(name = "request_status")
+  private String requestStatus;
+
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "seesion_id")

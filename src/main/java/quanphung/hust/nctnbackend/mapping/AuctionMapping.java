@@ -21,6 +21,7 @@ public class AuctionMapping implements BaseMapping<AuctionSession, AuctionDTO>
       .status(session.getStatus())
       .imageUrl(session.getImageUrl())
       .isStream(session.isStream())
+      .pending(session.getPending())
       .build();
   }
 

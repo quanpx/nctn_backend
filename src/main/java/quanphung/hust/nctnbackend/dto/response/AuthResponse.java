@@ -34,6 +34,9 @@ public class AuthResponse
   @JsonProperty("error")
   private String error;
 
+  @JsonProperty("is_failed")
+  private boolean isFailed;
+
   @JsonProperty("name")
   private String name;
 

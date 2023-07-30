@@ -17,11 +17,13 @@ public class UserAuctionMapping implements BaseMapping<UserAuction, UserAuctionD
   public UserAuctionDto convertToDto(UserAuction userAuction)
   {
     AuctionDTO auctionDTO = auctionMapping.convertToDto(userAuction.getAuctionSession());
-    UserAuctionDto userAuctionDto = UserAuctionDto.builder()
+    return UserAuctionDto.builder()
+      .id(userAuction.getId())
+      .status(userAuction.getRequestStatus())
+      .owner(userAuction.getCreatedBy())
       .auctionDTO(auctionDTO)
       .createdAt(userAuction.getCreatedDate())
       .build();
-    return userAuctionDto;
   }
 
   @Override

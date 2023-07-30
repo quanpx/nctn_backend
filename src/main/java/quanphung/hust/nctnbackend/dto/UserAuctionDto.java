@@ -16,6 +16,15 @@ import lombok.NoArgsConstructor;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserAuctionDto
 {
+  @JsonProperty("id")
+  private Long id;
+
+  @JsonProperty("owner")
+  private String owner;
+
+  @JsonProperty("status")
+  private String status;
+
   @JsonProperty("auction")
   private AuctionDTO auctionDTO;
 

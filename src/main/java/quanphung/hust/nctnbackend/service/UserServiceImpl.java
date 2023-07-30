@@ -130,10 +130,13 @@ public class UserServiceImpl implements UserService
     if (!checkUserExist)
     {
       userInfoRepository.save(userInfo);
+      response = AuthResponse.builder().isFailed(false).build();
     }
     else
     {
-      response = AuthResponse.builder().error("User existed!").build();
+      response = AuthResponse.builder()
+        .isFailed(true)
+        .error("Người dùng đã tồn tại.").build();
     }
 
     return response;

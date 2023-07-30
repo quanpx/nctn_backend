@@ -9,7 +9,7 @@ import quanphung.hust.nctnbackend.domain.AuctionSession;
 import quanphung.hust.nctnbackend.domain.UserAuction;
 
 @Repository
-public interface UserAuctionRepository extends JpaRepository<UserAuction, Long>
+public interface UserAuctionRepository extends JpaRepository<UserAuction, Long>,UserAuctionRepositoryCustom
 {
     UserAuction findUserAuctionByCreatedByAndAuctionSession(String name, AuctionSession session);
     List<UserAuction> findAllByCreatedBy(String name);

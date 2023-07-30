@@ -48,6 +48,9 @@ public class AuctionSession extends InitializationInfo
   @Column(name = "is_stream")
   private boolean isStream;
 
+  @Column(name="pending_request")
+  private int pending;
+
   @Column(name = "status")
   private String status;
 
@@ -71,5 +74,12 @@ public class AuctionSession extends InitializationInfo
   {
     this.registerNum++;
   }
+
+  public void increasePendingRequest()
+  {
+    this.pending++;
+  }
+
+  public void decreasePendingRequest() {this.pending--;}
 
 }
